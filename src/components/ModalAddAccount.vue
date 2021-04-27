@@ -84,7 +84,6 @@ export default {
       this.acccount_data = {
         account_name: "",
         account_number: "",
-        account_email: "",
         account_status: "",
       };
       this.nameState = null;

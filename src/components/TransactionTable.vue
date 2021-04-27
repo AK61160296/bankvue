@@ -1,6 +1,8 @@
 <template>
   <div>
-    <button-add-transaction/>
+    <button-add-transaction />
+    <modal-deposit-withdraw :listaccount="listaccount" />
+    <modal-tranfer :listaccount="listaccount" />
     <table>
       <thead>
         <tr>
@@ -27,14 +29,42 @@
 </template>
 
 <script>
-import ButtonAddTransaction from './ButtonAddTransaction.vue';
+import ModalTranfer from "./ModalTranfer.vue";
+import ModalDepositWithdraw from "./ModalDepositWithdraw.vue";
+import ButtonAddTransaction from "./ButtonAddTransaction.vue";
 export default {
   components: {
-    ButtonAddTransaction
+    ButtonAddTransaction,
+    ModalTranfer,
+    ModalDepositWithdraw
   },
   props: {
-    listtransaction: Array,
+    listaccount: Array,
   },
+  data(){
+    return{
+         listtransaction: [
+        {
+          id: 1,
+          transaction_date: "20/04/2555",
+          transaction_number: "111111111",
+          transaction_detail: "โอนเงิน",
+          transaction_deduction: "100",
+          transaction_Addmonney: "-",
+          transaction_balance: "100",
+        },
+        {
+          id: 2,
+          transaction_date: "20/04/2555",
+          transaction_number: "222222222",
+          transaction_detail: "ฝากเงิน",
+          transaction_deduction: "-",
+          transaction_Addmonney: "1000",
+          transaction_balance: "1000",
+        },
+      ],
+    }
+  }
 };
 </script>
 <style scoped>

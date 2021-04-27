@@ -96,12 +96,14 @@
 export default {
   name: "modal-edit-account",
   props: {
-    listaccount_edit: Object,
+    detail: Object,
+    global: Object,
   },
   data() {
     return {
       nameState: null,
       acccount_data: {
+        account_id: "",
         account_name_edit: "",
         account_number_edit: "",
         account_status_edit: "",
@@ -112,20 +114,42 @@ export default {
     setModal() {
       // alert("set");
       this.acccount_data = {
-        account_name_edit: this.listaccount_edit.account_name_edit,
-        account_number_edit: this.listaccount_edit.account_number_edit,
-        account_status_edit: this.listaccount_edit.account_status_edit,
+        account_id: this.detail.account_id,
+        account_name_edit: this.detail.account_name_edit,
+        account_number_edit: this.detail.account_number_edit,
+        account_status_edit: this.detail.account_status_edit,
       };
       this.nameState = null;
     },
     resetModal() {
       // alert("reset");
       this.acccount_data = {
+        account_id:"",
         account_name_edit: "",
         account_number_edit: "",
         account_status_edit: "",
       };
       this.nameState = null;
+    },
+    handleOk(bvModalEvt) {
+      // Prevent modal from closing
+      bvModalEvt.preventDefault();
+      // Trigger submit handler
+      this.handleSubmit();
+    },
+    handleSubmit() {
+      console.log(this.acccount_data);
+      // Exit when the form isn't valid
+      // if (!this.checkFormValidity()) {
+      //   return;
+      // }
+
+      this.$emit("edit:accountedit", this.acccount_data);
+
+      // Hide the modal manually
+      this.$nextTick(() => {
+        this.$bvModal.hide("modal-edit-account");
+      });
     },
   },
 };

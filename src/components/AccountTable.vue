@@ -1,5 +1,6 @@
 <template>
   <div>
+    <button-add-account />
     <table>
       <thead>
         <tr>
@@ -18,45 +19,71 @@
           <td v-if="list.account_status == 1">ใช้งาน</td>
           <td v-else>ไม่ใช้งาน</td>
           <td>
-            <b-button variant="warning" v-on:click="checkvalue(list.id)"
+            <b-button variant="warning" v-on:click="onClickOpenModal(list.id)"
               >เเก้ไข</b-button
             >
           </td>
         </tr>
       </tbody>
     </table>
-    <modal-edit-account :listaccount_edit="listaccount_edit" />
+    <modal-add-account @add:account1="addAccount" />
+    <modal-edit-account
+      @edit:accountedit="editAccount"
+      :detail="detail"
+    />
   </div>
 </template>
 
 <script>
+import ButtonAddAccount from "./ButtonAddAccount.vue";
+import ModalAddAccount from "./ModalAddAccount.vue";
 import ModalEditAccount from "./ModalEditAccount.vue";
 export default {
   components: {
     ModalEditAccount,
+    ButtonAddAccount,
+    ModalAddAccount,
   },
   name: "account-table",
   data() {
     return {
-      accountmodal: false,
-      listaccount_edit: {
+      listaccount: [
+        {
+          id: 1,
+          account_name: "View",
+          account_number: "1111111111",
+          account_status: "1",
+        },
+      ],
+      detail: {
+        account_id: "",
         account_name_edit: "",
         account_number_edit: "",
         account_status_edit: "",
       },
     };
   },
-  props: {
-    listaccount: Array,
-  },
   methods: {
-    checkvalue(id) {
-      // alert("step1")
-      this.listaccount_edit = {
-        account_name_edit: this.listaccount[id - 1].account_name,
-        account_number_edit: this.listaccount[id - 1].account_number,
-        account_status_edit: this.listaccount[id - 1].account_status,
-      };
+    addAccount(acccount_data) {
+      const last_id =
+        this.listaccount.length > 0
+          ? this.listaccount[this.listaccount.length - 1].id
+          : 0;
+      const id = last_id + 1;
+      const new_account_data = { ...acccount_data, id };
+      this.listaccount = [...this.listaccount, new_account_data];
+    },
+    editAccount(acccount_data) {
+      const row = this.listaccount.find(element => element.id == acccount_data.account_id);
+      row.account_name = acccount_data.account_name_edit;
+      row.account_status = acccount_data.account_status_edit;
+    },
+    onClickOpenModal(id) {
+      const row = this.listaccount.find(element => element.id == id);
+      this.detail.account_id = id;
+      this.detail.account_name_edit = row.account_name;
+      this.detail.account_number_edit = row.account_number;
+      this.detail.account_status_edit = row.account_status;
       this.$bvModal.show("modal-edit-account");
     },
   },
