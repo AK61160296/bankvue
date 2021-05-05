@@ -15,10 +15,14 @@
           invalid-feedback="Name is required"
           :state="nameState"
         >
-          <b-form-select>
-            <option v-for="list in listaccount" :key="list.id">{{
-              list.account_number
-            }}</option>
+          <b-form-select v-model="ModalData.accountId" :options="optionsAccount">
+            <!-- <option value="" disabled>-กรุณาเลือกบัญชี-</option>
+            <option
+              v-for="list in accountNumber"
+              :key="list.id"
+              :value="list.acId"
+              >{{ list.acNumber }}</option
+            > -->
           </b-form-select>
         </b-form-group>
 
@@ -28,9 +32,7 @@
           invalid-feedback="Name is required"
           :state="nameState"
         >
-          <b-form-select>
-            <option>ฝาก</option>
-            <option>ถอน</option>
+          <b-form-select v-model="ModalData.type" :options="optionsType">
           </b-form-select>
         </b-form-group>
         <b-form-group
@@ -41,7 +43,7 @@
         >
           <b-form-input
             id="name-input"
-            v-model="acccount_data.account_name"
+            v-model="ModalData.monney"
             :state="nameState"
             required
           ></b-form-input>
@@ -55,17 +57,93 @@
 export default {
   data() {
     return {
+      accountNumber: null,
       nameState: null,
-      acccount_data: {
-        account_name_edit: "",
-        account_number_edit: "",
+      ModalData: {
+        accountId: "",
+        monney: "",
+        type: "",
+        detail: "",
       },
+      optionsAccount: [{ value: "", text: "-- กรุณาเลือกเลขบัญชี --" ,disabled: true }],
+      optionsType: [
+        { value: "", text: "-- ประเภทรายการ --" ,disabled: true },
+        { value: "1", text: "ฝาก" },
+        { value: "2", text: "ถอน" },
+      ],
     };
   },
   props: {
-    listaccount: Array,
+    trasactionDetail: Object,
   },
-  methods: {},
+  methods: {
+    optionAccount() {
+      this.axios
+        .post("http://localhost:29245/Transaction/Option_account")
+        .then((response) => {
+          response.data.forEach((element) => {
+            this.optionsAccount.push({ value: element.acId, text: element.acNumber });
+          });
+        });
+    },
+    checkFormValidity() {
+      const valid = this.$refs.form.checkValidity();
+      this.nameState = valid;
+      return valid;
+    },
+    resetModal() {
+      (this.ModalData = {
+        accountId: "",
+        monney: "",
+        type: "",
+        detail: "",
+      }),
+        (this.nameState = null);
+    },
+    handleOk(bvModalEvt) {
+      bvModalEvt.preventDefault();
+      this.handleSubmit();
+    },
+    handleSubmit() {
+      if (!this.checkFormValidity()) {
+        return;
+      }
+      if (this.ModalData.type == 1) {
+        this.trasactionDetail = {
+          TsAcId: parseInt(this.ModalData.accountId),
+          TsType: parseInt(this.ModalData.type),
+          TsMoney: parseFloat(this.ModalData.monney),
+          TsDetail: "ฝากเงิน",
+          TsNote: "",
+          TsAD: "",
+        };
+      } else {
+        this.trasactionDetail = {
+          TsAcId: parseInt(this.ModalData.accountId),
+          TsType: parseInt(this.ModalData.type),
+          TsMoney: parseFloat(this.ModalData.monney),
+          TsDetail: "ถอนเงิน",
+          TsNote: "",
+          TsAD: "",
+        };
+      }
+      this.axios
+        .post(
+          "http://localhost:29245/Transaction/Deposit_Withdraw",this.trasactionDetail)
+        .then((response) => {
+          console.log(response);
+          this.$emit("saveData", response.data);
+        });
+
+      this.nameState = null;
+      this.$nextTick(() => {
+        this.$bvModal.hide("modal-depositWithdraw");
+      });
+    },
+  },
+  mounted() {
+    this.optionAccount();
+  },
 };
 </script>
 <style scoped>

@@ -1,8 +1,12 @@
 <template>
   <div>
-    <button-add-transaction />
-    <modal-deposit-withdraw :listaccount="listaccount" />
-    <modal-tranfer :listaccount="listaccount" />
+    <br />
+    <button-add-transaction @setValueSearch="setValueSearch" />
+    <modal-deposit-withdraw
+      @saveData="saveData"
+      :trasactionDetail="trasactionDetail"
+    />
+    <modal-tranfer @saveData="saveData" :trasactionDetail="trasactionDetail" />
     <table>
       <thead>
         <tr>
@@ -15,13 +19,43 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="list in listtransaction" :key="list.id">
-          <td>{{ list.transaction_date }}</td>
-          <td>{{ list.transaction_number }}</td>
-          <td>{{ list.transaction_detail }}</td>
-          <td>{{ list.transaction_deduction }}</td>
-          <td>{{ list.transaction_Addmonney }}</td>
-          <td>{{ list.transaction_balance }}</td>
+        <tr v-for="list in transactionDataApi" :key="list.id">
+          <td>{{ list.date1 }}</td>
+          <td>{{ list.name }}</td>
+          <td>{{ list.tsDetail }}</td>
+          <td
+            v-if="
+              list.tsType == 1 ||
+                (list.tsType == 4 && list.tsAcDestinationId != 0)
+            "
+          >
+            -
+          </td>
+          <td
+            v-if="
+              list.tsType == 1 ||
+                (list.tsType == 4 && list.tsAcDestinationId != 0)
+            "
+          >
+            {{ list.tsMoney }}
+          </td>
+          <td
+            v-if="
+              (list.tsType == 2 && list.tsAcDestinationId == 0) ||
+                list.tsType == 3
+            "
+          >
+            {{ list.tsMoney }}
+          </td>
+          <td
+            v-if="
+              (list.tsType == 2 && list.tsAcDestinationId == 0) ||
+                list.tsType == 3
+            "
+          >
+            -
+          </td>
+          <td>{{ list.tsBalance }}</td>
         </tr>
       </tbody>
     </table>
@@ -36,42 +70,61 @@ export default {
   components: {
     ButtonAddTransaction,
     ModalTranfer,
-    ModalDepositWithdraw
+    ModalDepositWithdraw,
   },
-  props: {
-    listaccount: Array,
+  props: {},
+  data() {
+    return {
+      transactionDataApi: null,
+      searchObj: { keyword: "", date_begin: "", date_end: "", TsDetail: "" },
+      trasactionDetail: {
+        TsAcId: null,
+        TsType: null,
+        TsMoney: null,
+        TsDetail: "",
+        TsNote: "",
+        TsAD: "",
+      },
+    };
   },
-  data(){
-    return{
-         listtransaction: [
-        {
-          id: 1,
-          transaction_date: "20/04/2555",
-          transaction_number: "111111111",
-          transaction_detail: "โอนเงิน",
-          transaction_deduction: "100",
-          transaction_Addmonney: "-",
-          transaction_balance: "100",
-        },
-        {
-          id: 2,
-          transaction_date: "20/04/2555",
-          transaction_number: "222222222",
-          transaction_detail: "ฝากเงิน",
-          transaction_deduction: "-",
-          transaction_Addmonney: "1000",
-          transaction_balance: "1000",
-        },
-      ],
-    }
-  }
+  mounted() {
+    this.Search();
+  },
+  methods: {
+    setValueSearch(value) {
+      console.log(value)
+      this.searchObj = {
+        keyword: value.keyword,
+        date_begin: value.dateBegin,
+        date_end: value.dateEnd,
+        TsDetail: value.keyword,
+      };
+      this.Search();
+    },
+    Search() {
+      this.axios
+        .post("http://localhost:29245/Transaction/Search", this.searchObj)
+        .then((response) => {
+          console.log(response.data);
+          this.transactionDataApi = response.data;
+        });
+    },
+    saveData(Status) {
+      if (Status == "success") {
+        alert("success");
+      } else {
+        alert("error");
+      }
+      this.Search();
+    },
+  },
 };
 </script>
 <style scoped>
 table {
   font-family: Arial, Helvetica, sans-serif;
   border-collapse: collapse;
-  width: 70%;
+  width: 75%;
   margin-left: auto;
   margin-right: auto;
 }

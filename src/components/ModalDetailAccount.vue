@@ -1,10 +1,10 @@
 <template>
   <div>
     <b-modal
-      id="modal-add-account"
+      id="modal-detail-account"
       ref="modal"
       title="เพิ่มบัญชี"
-      @show="resetModal"
+      @show="setModal"
       @hidden="resetModal"
       @ok="handleOk"
     >
@@ -16,10 +16,20 @@
           :state="nameState"
         >
           <b-form-input
+            v-if="modalType == 2"
             id="name-input"
-            v-model="acccount_data.account_number"
+            v-model="ModalData.account_number"
             :state="nameState"
             required
+            disabled
+          ></b-form-input>
+          <b-form-input
+            v-else
+            id="name-input"
+            v-model="ModalData.account_number"
+            :state="nameState"
+            required
+            maxlength="10"
           ></b-form-input>
         </b-form-group>
 
@@ -31,7 +41,7 @@
         >
           <b-form-input
             id="name-input"
-            v-model="acccount_data.account_name"
+            v-model="ModalData.account_name"
             :state="nameState"
             required
           ></b-form-input>
@@ -44,7 +54,8 @@
             id="one"
             value="1"
             name="check"
-            v-model="acccount_data.account_status"
+            required
+            v-model="ModalData.account_status"
           />
           <label for="one">ใช้งาน</label>
           <input
@@ -53,7 +64,8 @@
             id="two"
             value="2"
             name="check"
-            v-model="acccount_data.account_status"
+            required
+            v-model="ModalData.account_status"
           />
           <label for="two">ไม่ใช้งาน</label>
         </b-form-group>
@@ -64,24 +76,36 @@
 
 <script>
 export default {
+  props: {
+    accountDetail: Object,
+    modalType: String,
+  },
   data() {
     return {
       nameState: null,
-      acccount_data: {
-        account_name: "",
+      ModalData: {
         account_number: "",
+        account_name: "",
         account_status: "",
       },
     };
   },
   methods: {
+    setModal() {
+        (this.ModalData.account_id = this.accountDetail.acId),
+        (this.ModalData.account_name = this.accountDetail.acName),
+        (this.ModalData.account_number = this.accountDetail.acNumber),
+        (this.ModalData.account_status = this.accountDetail.acIsActive),
+        (this.nameState = null);
+    },
     checkFormValidity() {
       const valid = this.$refs.form.checkValidity();
       this.nameState = valid;
       return valid;
     },
     resetModal() {
-      this.acccount_data = {
+      this.ModalData = {
+        account_id: "",
         account_name: "",
         account_number: "",
         account_status: "",
@@ -99,12 +123,38 @@ export default {
       if (!this.checkFormValidity()) {
         return;
       }
+      if (this.modalType == "1") {
 
-      this.$emit("add:account1", this.acccount_data);
+        this.accountDetail = {
+          acNumber: this.ModalData.account_number,
+          acName: this.ModalData.account_name,
+          acIsActive: parseInt(this.ModalData.account_status),
+        };
+        this.axios
+          .post("http://localhost:29245/Home/Add", this.accountDetail)
+          .then((response) => {
+            console.log(response);
+             this.$emit("saveData", response.data);
+          });
 
-      // Hide the modal manually
+      } else {
+        this.accountDetail = {
+          acId: parseInt(this.ModalData.account_id),
+          acNumber: this.ModalData.account_number,
+          acName: this.ModalData.account_name,
+          acIsActive: parseInt(this.ModalData.account_status),
+        };
+        this.axios
+          .post("http://localhost:29245/Home/Update", this.accountDetail)
+          .then((response) => {
+            console.log(response);
+            //
+           this.$emit("saveData",  response.data);
+          });    
+      }
+      this.nameState = null;
       this.$nextTick(() => {
-        this.$bvModal.hide("modal-add-account");
+        this.$bvModal.hide("modal-detail-account");
       });
     },
   },
@@ -117,5 +167,4 @@ export default {
 #two {
   margin-left: 10px;
 }
-
 </style>

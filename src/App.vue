@@ -1,18 +1,21 @@
 <template>
   <div class="small-container">
-    <my-header @subcom="switchcomponent" color="red" />
+    <my-header v-if="subcomponent != 3" @subcom="switchcomponent" color="red" />
     <br />
     <br />
-    <h1 v-if="subaccount == true">รายการบัญชี</h1>
-    <h1 v-else>รายการธุรกรรม</h1>
-    <account-table v-if="subaccount"  />
-    <transaction-table v-else  />
+    <h1 v-if="subcomponent == 1">รายการบัญชี</h1>
+    <h1 class="headerTransaction" v-if="subcomponent == 2">รายการธุรกรรม</h1>
+    <h1 v-if="subcomponent == 3">รายการผู้ใช้</h1>
+    <account-table v-if="subcomponent == 1" />
+    <transaction-table v-if="subcomponent == 2" />
+    <users-table v-if="subcomponent == 3" @subcom="switchcomponent" />
     <br />
     <br />
   </div>
 </template>
 
 <script>
+import UsersTable from "./components/UsersTable.vue";
 import AccountTable from "./components/AccountTable.vue";
 import Header from "./components/Header.vue";
 import TransactionTable from "./components/TransactionTable.vue";
@@ -22,17 +25,18 @@ export default {
     AccountTable,
     "my-header": Header,
     TransactionTable,
+    UsersTable,
   },
   data() {
     return {
+      subcomponent: 3,
       subaccount: true,
       subtransaction: false,
     };
   },
   methods: {
     switchcomponent(value) {
-      this.subtransaction = value.TrasactionTable;
-      this.subaccount = value.AccountTable;
+      this.subcomponent = value
     },
   },
 };
@@ -45,5 +49,8 @@ export default {
 h1 {
   margin-left: 230px;
   margin-bottom: 50px;
+}
+.headerTransaction{
+  margin-left:12rem;
 }
 </style>
