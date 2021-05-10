@@ -16,13 +16,6 @@
           :state="nameState"
         >
           <b-form-select v-model="ModalData.accountId" :options="optionsAccount">
-            <!-- <option value="" disabled>-กรุณาเลือกบัญชี-</option>
-            <option
-              v-for="list in accountNumber"
-              :key="list.id"
-              :value="list.acId"
-              >{{ list.acNumber }}</option
-            > -->
           </b-form-select>
         </b-form-group>
 

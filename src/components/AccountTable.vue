@@ -8,6 +8,7 @@
           id="inline-form-input-username"
           placeholder="เลขบัญชี ชื่อย่อบัญชี"
           v-model="keyword"
+          maxlength="20"
         ></b-form-input>
       </b-input-group>
       <b-button class="btn" variant="danger"  v-on:click="Search()">ค้นหา</b-button>
@@ -100,6 +101,7 @@ export default {
       this.Search();
     },
     onClickOpenModal(id, Type) {
+
       this.modalType = Type;
       if (Type == "2" && id != 0) {
         const row = this.AccountDataApi.find((element) => element.acId == id);
@@ -113,6 +115,7 @@ export default {
         this.accountDetail.acNumber = "";
         this.accountDetail.acIsActive = "";
       }
+      console.log(this.accountDetail)
       this.$bvModal.show("modal-detail-account");
     },
   },

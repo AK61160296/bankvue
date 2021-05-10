@@ -11,6 +11,8 @@
     <users-table v-if="subcomponent == 3" @subcom="switchcomponent" />
     <br />
     <br />
+
+    
   </div>
 </template>
 
@@ -26,6 +28,7 @@ export default {
     "my-header": Header,
     TransactionTable,
     UsersTable,
+    
   },
   data() {
     return {
