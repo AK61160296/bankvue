@@ -1,8 +1,8 @@
 <template>
   <div>
-    <br>
+    <br />
     <b-form inline class="form">
-      คำค้นหา : 
+      คำค้นหา :
       <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
         <b-form-input
           id="inline-form-input-username"
@@ -11,8 +11,13 @@
           maxlength="20"
         ></b-form-input>
       </b-input-group>
-      <b-button class="btn" variant="danger"  v-on:click="Search()">ค้นหา</b-button>
-      <b-button class="btn" variant="primary" v-on:click="onClickOpenModal(0, '1')"
+      <b-button class="btn" variant="danger" v-on:click="Search()"
+        >ค้นหา</b-button
+      >
+      <b-button
+        class="btn"
+        variant="primary"
+        v-on:click="onClickOpenModal(0, '1')"
         >เพิ่มบัญชี</b-button
       >
     </b-form>
@@ -60,6 +65,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ModalDetailAccount from "./ModalDetailAccount.vue";
 export default {
   components: {
@@ -68,9 +74,9 @@ export default {
   name: "account-table",
   data() {
     return {
-      keyword:"",
+      keyword: "",
       searchObj: { acNumber: "", acName: "" },
-      AccountDataApi: null,
+
       modalType: "",
       accountDetail: {
         acId: "",
@@ -85,23 +91,17 @@ export default {
   },
   methods: {
     Search() {
-      this.searchObj={
-        acNumber:this.keyword,
-        acName:this.keyword
-      }
-      this.axios
-        .post("http://localhost:29245/Home/Search", this.searchObj)
-        .then((response) => {
-          console.log(response.data)
-          this.AccountDataApi = response.data;
-        });
+      this.searchObj = {
+        acNumber: this.keyword,
+        acName: this.keyword,
+      };
+      this.$store.dispatch("account/Seacrh", this.searchObj);
     },
     saveData(status) {
       alert(status);
       this.Search();
     },
     onClickOpenModal(id, Type) {
-
       this.modalType = Type;
       if (Type == "2" && id != 0) {
         const row = this.AccountDataApi.find((element) => element.acId == id);
@@ -115,9 +115,15 @@ export default {
         this.accountDetail.acNumber = "";
         this.accountDetail.acIsActive = "";
       }
-      console.log(this.accountDetail)
-      this.$bvModal.show("modal-detail-account");
+
+      this.$bvModal.show("modal-detail");
     },
+  },
+  computed: {
+    ...mapState("account", ["AccountDataApi"]),
+    // ...mapGetters({
+    //   accountData: 'account/getAccountTable'
+    // }),
   },
 };
 </script>
@@ -161,11 +167,11 @@ table th {
   background-color: #008cba;
   color: white;
 }
- button{
-   margin-right: 15px;
- }
- input{
-    margin-right: 10px;
-    margin-left: 5px;
- }
+button {
+  margin-right: 15px;
+}
+input {
+  margin-right: 10px;
+  margin-left: 5px;
+}
 </style>

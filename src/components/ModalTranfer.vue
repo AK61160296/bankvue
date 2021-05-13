@@ -1,83 +1,82 @@
 <template>
   <div>
-    <b-modal
-      id="modal-tranfer"
-      ref="modal"
-      title="โอนเงิน"
-      @show="resetModal"
-      @hidden="resetModal"
-      @ok="handleOk"
-    >
-      <form ref="form" @submit.stop.prevent="handleSubmit">
-        <b-form-group
-          label="จาก"
-          label-for="name-input"
-          invalid-feedback="Name is required"
-          :state="nameState"
-        >
-          <b-form-select v-model="ModalData.tranfer_account" :options="options">
-            
-            <!-- <option value="" disabled>-กรุณาเลือกบัญชี-</option>
-            <option
-              v-for="list in accountNumberApi"
-              :key="list.id"
-              v-bind:value="list.acId"
-            >
-              {{ list.acNumber }}
-            </option> -->
-          </b-form-select>
-
-        </b-form-group>
-
-        <b-form-group
-          label="ไปที่"
-          label-for="name-input"
-          invalid-feedback="Name is required"
-          :state="nameState"
-        >
-          <b-form-input
-            id="name-input"
-            v-model="ModalData.tranfer_payee"
+    <bank-modal>
+      <template v-slot:header>
+        <h3>โอนเงิน</h3>
+      </template>
+      <template v-slot:body>
+        <form ref="form" @submit.stop.prevent="handleSubmit">
+          <b-form-group
+            label="จาก"
+            label-for="name-input"
+            invalid-feedback="Name is required"
             :state="nameState"
-            required
-            maxlength="10"
-          ></b-form-input>
-        </b-form-group>
-
-        <b-form-group
-          label="จำนวนเงิน"
-          label-for="name-input"
-          invalid-feedback="Name is required"
-          :state="nameState"
-        >
-          <b-form-input
-            id="name-input"
-            v-model="ModalData.tranfer_monney"
-            :state="nameState"
-            required
-          ></b-form-input>
-        </b-form-group>
-
-        <b-form-group
-          label="หมายเหตุ"
-          label-for="name-input"
-          invalid-feedback="Name is required"
-          :state="nameState"
-        >
-          <b-form-textarea
-            id="textarea-small"
-            size="sm"
-            v-model="ModalData.tranfer_note"
           >
-          </b-form-textarea>
-        </b-form-group>
-      </form>
-    </b-modal>
+            <b-form-select
+              v-model="ModalData.tranfer_account"
+              :options="options"
+            >
+            </b-form-select>
+          </b-form-group>
+
+          <b-form-group
+            label="ไปที่"
+            label-for="name-input"
+            invalid-feedback="Name is required"
+            :state="nameState"
+          >
+            <b-form-input
+              id="name-input"
+              v-model="ModalData.tranfer_payee"
+              :state="nameState"
+              required
+              maxlength="10"
+            ></b-form-input>
+          </b-form-group>
+
+          <b-form-group
+            label="จำนวนเงิน"
+            label-for="name-input"
+            invalid-feedback="Name is required"
+            :state="nameState"
+          >
+            <b-form-input
+              id="name-input"
+              v-model="ModalData.tranfer_monney"
+              :state="nameState"
+              required
+            ></b-form-input>
+          </b-form-group>
+
+          <b-form-group
+            label="หมายเหตุ"
+            label-for="name-input"
+            invalid-feedback="Name is required"
+            :state="nameState"
+          >
+            <b-form-textarea
+              id="textarea-small"
+              size="sm"
+              v-model="ModalData.tranfer_note"
+            >
+            </b-form-textarea>
+          </b-form-group>
+        </form>
+      </template>
+      <template v-slot:footer>
+        <b-button variant="secondary" v-on:click="resetModal">CLOSE</b-button>
+        <b-button variant="primary" v-on:click="handleOk">OK</b-button>
+      </template>
+    </bank-modal>
   </div>
 </template>
 
 <script>
+import BankModal from "./BankModal.vue";
 export default {
+  components: {
+    BankModal,
+  },
   data() {
     return {
       accountNumberApi: null,
@@ -90,8 +89,8 @@ export default {
         tranfer_note: "",
       },
       options: [
-          { value: '', text: '-- กรุณาเลือกเลขบัญชี --' ,disabled: true },
-        ]
+        { value: "", text: "-- กรุณาเลือกเลขบัญชี --", disabled: true },
+      ],
     };
   },
   props: {
@@ -102,8 +101,8 @@ export default {
       this.axios
         .post("http://localhost:29245/Transaction/Option_account")
         .then((response) => {
-          response.data.forEach(element => {
-            this.options.push({value:element.acId,text:element.acNumber})
+          response.data.forEach((element) => {
+            this.options.push({ value: element.acId, text: element.acNumber });
           });
           this.accountNumberApi = response.data;
         });
@@ -122,6 +121,9 @@ export default {
         tranfer_note: "",
       }),
         (this.nameState = null);
+      this.$nextTick(() => {
+        this.$bvModal.hide("modal-detail");
+      });
     },
     handleOk(bvModalEvt) {
       bvModalEvt.preventDefault();
@@ -140,13 +142,17 @@ export default {
         TsAD: this.ModalData.tranfer_payee,
       };
       this.axios
-        .post( "http://localhost:29245/Transaction/Transfer", this.trasactionDetail)
+        .post(
+          "http://localhost:29245/Transaction/Transfer",
+          this.trasactionDetail
+        )
         .then((response) => {
-          this.$emit("checkStatus", response.data);
+          this.$emit("saveData", response.data);
         });
+
       this.nameState = null;
       this.$nextTick(() => {
-        this.$bvModal.hide("modal-tranfer");
+        this.$bvModal.hide("modal-detail");
       });
     },
   },

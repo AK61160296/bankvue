@@ -1,27 +1,19 @@
 <template>
   <div>
     <b-modal
-      id="modal-detail-account"
-      ref="modal"
-      hide-header
-      hide-footer
+      id="modal-detail"
       @show="setModal"
-      @hidden="resetModal"
-      @ok="handleOk"
     >
-      <header class="modal-header" >
-        <slot name="header">
+      <template v-slot:modal-header>
+        <slot  name="header">
         </slot>
-      </header>
-
-      <body class="modal-body">
+      </template>
+ 
         <slot name="body"> </slot>
-      </body>
 
-      <footer class="modal-footer">
+      <template v-slot:modal-footer>
         <slot name="footer"> </slot>
-      </footer>
-
+      </template>
     </b-modal>
   </div>
 </template>
@@ -31,6 +23,9 @@ export default {
   methods: {
     close() {
       this.$emit("close");
+    },
+    setModal() {
+      this.$emit("setValueInModal");
     },
   },
 };

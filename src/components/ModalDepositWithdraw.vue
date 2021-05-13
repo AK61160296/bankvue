@@ -1,53 +1,63 @@
 <template>
   <div>
-    <b-modal
-      id="modal-depositWithdraw"
-      ref="modal"
-      title="ฝาก-ถอน"
-      @show="resetModal"
-      @hidden="resetModal"
-      @ok="handleOk"
-    >
-      <form ref="form" @submit.stop.prevent="handleSubmit">
-        <b-form-group
-          label="เลขบัญชี"
-          label-for="name-input"
-          invalid-feedback="Name is required"
-          :state="nameState"
-        >
-          <b-form-select v-model="ModalData.accountId" :options="optionsAccount">
-          </b-form-select>
-        </b-form-group>
+    <bank-modal>
+      <template v-slot:header>
+        <h3>ฝาก-ถอน</h3>
+      </template>
 
-        <b-form-group
-          label="ประเภท"
-          label-for="name-input"
-          invalid-feedback="Name is required"
-          :state="nameState"
-        >
-          <b-form-select v-model="ModalData.type" :options="optionsType">
-          </b-form-select>
-        </b-form-group>
-        <b-form-group
-          label="จำนวนเงิน"
-          label-for="name-input"
-          invalid-feedback="Name is required"
-          :state="nameState"
-        >
-          <b-form-input
-            id="name-input"
-            v-model="ModalData.monney"
+      <template v-slot:body>
+        <form ref="form">
+          <b-form-group
+            label="เลขบัญชี"
+            label-for="name-input"
+            invalid-feedback="Name is required"
             :state="nameState"
-            required
-          ></b-form-input>
-        </b-form-group>
-      </form>
-    </b-modal>
+          >
+            <b-form-select
+              v-model="ModalData.accountId"
+              :options="optionsAccount"
+            >
+            </b-form-select>
+          </b-form-group>
+
+          <b-form-group
+            label="ประเภท"
+            label-for="name-input"
+            invalid-feedback="Name is required"
+            :state="nameState"
+          >
+            <b-form-select v-model="ModalData.type" :options="optionsType">
+            </b-form-select>
+          </b-form-group>
+          <b-form-group
+            label="จำนวนเงิน"
+            label-for="name-input"
+            invalid-feedback="Name is required"
+            :state="nameState"
+          >
+            <b-form-input
+              id="name-input"
+              v-model="ModalData.monney"
+              :state="nameState"
+              required
+            ></b-form-input>
+          </b-form-group>
+        </form>
+      </template>
+      <template v-slot:footer>
+        <b-button variant="secondary" v-on:click="resetModal">CLOSE</b-button>
+        <b-button variant="primary" v-on:click="handleOk">OK</b-button>
+      </template>
+    </bank-modal>
   </div>
 </template>
 
 <script>
+import BankModal from "./BankModal.vue";
 export default {
+  components: {
+    BankModal,
+  },
   data() {
     return {
       accountNumber: null,
@@ -58,9 +68,11 @@ export default {
         type: "",
         detail: "",
       },
-      optionsAccount: [{ value: "", text: "-- กรุณาเลือกเลขบัญชี --" ,disabled: true }],
+      optionsAccount: [
+        { value: "", text: "-- กรุณาเลือกเลขบัญชี --", disabled: true },
+      ],
       optionsType: [
-        { value: "", text: "-- ประเภทรายการ --" ,disabled: true },
+        { value: "", text: "-- ประเภทรายการ --", disabled: true },
         { value: "1", text: "ฝาก" },
         { value: "2", text: "ถอน" },
       ],
@@ -75,7 +87,10 @@ export default {
         .post("http://localhost:29245/Transaction/Option_account")
         .then((response) => {
           response.data.forEach((element) => {
-            this.optionsAccount.push({ value: element.acId, text: element.acNumber });
+            this.optionsAccount.push({
+              value: element.acId,
+              text: element.acNumber,
+            });
           });
         });
     },
@@ -92,6 +107,9 @@ export default {
         detail: "",
       }),
         (this.nameState = null);
+      this.$nextTick(() => {
+        this.$bvModal.hide("modal-detail");
+      });
     },
     handleOk(bvModalEvt) {
       bvModalEvt.preventDefault();
@@ -122,7 +140,9 @@ export default {
       }
       this.axios
         .post(
-          "http://localhost:29245/Transaction/Deposit_Withdraw",this.trasactionDetail)
+          "http://localhost:29245/Transaction/Deposit_Withdraw",
+          this.trasactionDetail
+        )
         .then((response) => {
           console.log(response);
           this.$emit("saveData", response.data);
@@ -130,7 +150,7 @@ export default {
 
       this.nameState = null;
       this.$nextTick(() => {
-        this.$bvModal.hide("modal-depositWithdraw");
+        this.$bvModal.hide("modal-detail");
       });
     },
   },

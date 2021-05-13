@@ -11,8 +11,6 @@
     <users-table v-if="subcomponent == 3" @subcom="switchcomponent" />
     <br />
     <br />
-
-    
   </div>
 </template>
 

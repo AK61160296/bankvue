@@ -16,16 +16,10 @@
       <b-button class="btn" variant="danger" v-on:click="Search()"
         >ค้นหา</b-button
       >
-      <b-button
-        variant="primary"
-        class="btn"
-        @click="$bvModal.show('modal-tranfer')"
+      <b-button variant="primary" class="btn" @click="OpenModal(1)"
         >โอนเงิน</b-button
       >
-      <b-button
-        variant="primary"
-        class="btn"
-        @click="$bvModal.show('modal-depositWithdraw')"
+      <b-button variant="primary" class="btn" @click="OpenModal(2)"
         >ฝาก-ถอน</b-button
       >
     </b-form>
@@ -46,6 +40,10 @@ export default {
   methods: {
     Search() {
       this.$emit("setValueSearch", this.searchObj);
+    },
+    OpenModal(type) {
+
+      this.$emit("OpenModal", type);
     },
   },
 };

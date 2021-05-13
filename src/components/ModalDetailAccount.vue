@@ -1,11 +1,12 @@
 <template>
   <div>
-    <bank-modal>
+    <bank-modal @setValueInModal="setValueInModal">
       <template v-slot:header>
-        <h3>เพิ่มบัญชี</h3>
+        <h3 v-if="ModalData.account_number == ''">เพิ่มบัญชี</h3>
+        <h3 v-else>เเก้ไขบัญชี</h3>
       </template>
       <template v-slot:body>
-        <form ref="form" @submit.stop.prevent="handleSubmit">
+        <form ref="form">
           <b-form-group
             label="เลขบัญชี"
             label-for="name-input"
@@ -98,12 +99,10 @@ export default {
       },
     };
   },
-  mounted() {
-    this.setModal();
-  },
+  mounted() {},
   methods: {
-    setModal() {
-      (this.ModalData.account_id = this.accountDetail.acId),
+    setValueInModal() {
+        (this.ModalData.account_id = this.accountDetail.acId),
         (this.ModalData.account_name = this.accountDetail.acName),
         (this.ModalData.account_number = this.accountDetail.acNumber),
         (this.ModalData.account_status = this.accountDetail.acIsActive),
@@ -123,7 +122,7 @@ export default {
       };
       this.nameState = null;
       this.$nextTick(() => {
-        this.$bvModal.hide("modal-detail-account");
+        this.$bvModal.hide("modal-detail");
       });
     },
     handleOk(bvModalEvt) {
@@ -137,39 +136,34 @@ export default {
       if (!this.checkFormValidity()) {
         return;
       }
+
+      this.accountDetail = {
+        acId: parseInt(this.ModalData.account_id),
+        acNumber: this.ModalData.account_number,
+        acName: this.ModalData.account_name,
+        acIsActive: parseInt(this.ModalData.account_status),
+      };
+
       if (this.modalType == "1") {
-        this.accountDetail = {
-          acNumber: this.ModalData.account_number,
-          acName: this.ModalData.account_name,
-          acIsActive: parseInt(this.ModalData.account_status),
-        };
-        this.axios
-          .post("http://localhost:29245/Home/Add", this.accountDetail)
+        this.$store
+          .dispatch("account/addAccoount", this.accountDetail)
           .then((response) => {
-            console.log(response);
             this.$emit("saveData", response.data);
           });
       } else {
-        this.accountDetail = {
-          acId: parseInt(this.ModalData.account_id),
-          acNumber: this.ModalData.account_number,
-          acName: this.ModalData.account_name,
-          acIsActive: parseInt(this.ModalData.account_status),
-        };
-        this.axios
-          .post("http://localhost:29245/Home/Update", this.accountDetail)
+        this.$store
+          .dispatch("account/updateAccount", this.accountDetail)
           .then((response) => {
-            console.log(response);
-            //
             this.$emit("saveData", response.data);
           });
       }
       this.nameState = null;
       this.$nextTick(() => {
-        this.$bvModal.hide("modal-detail-account");
+        this.$bvModal.hide("modal-detail");
       });
     },
   },
+  computed: {},
 };
 </script>
 <style scoped>

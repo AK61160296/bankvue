@@ -1,12 +1,20 @@
 <template>
   <div>
     <br />
-    <button-add-transaction @setValueSearch="setValueSearch" />
+    <button-add-transaction
+      @setValueSearch="setValueSearch"
+      @OpenModal="OpenModal"
+    />
     <modal-deposit-withdraw
+      v-if="type.type_wepositWithdraw == true"
       @saveData="saveData"
       :trasactionDetail="trasactionDetail"
     />
-    <modal-tranfer @saveData="saveData" :trasactionDetail="trasactionDetail" />
+    <modal-tranfer
+      v-else
+      @saveData="saveData"
+      :trasactionDetail="trasactionDetail"
+    />
     <table>
       <thead>
         <tr>
@@ -75,6 +83,10 @@ export default {
   props: {},
   data() {
     return {
+      type: {
+        type_tranfer: false,
+        type_wepositWithdraw: false,
+      },
       transactionDataApi: null,
       searchObj: { keyword: "", date_begin: "", date_end: "", TsDetail: "" },
       trasactionDetail: {
@@ -91,8 +103,22 @@ export default {
     this.Search();
   },
   methods: {
+    OpenModal(type) {
+      if (type == 1) {
+        this.type = {
+          type_tranfer: true,
+          type_wepositWithdraw: false,
+        };
+      } else {
+        this.type = {
+          type_tranfer: false,
+          type_wepositWithdraw: true,
+        };
+      }
+      this.$bvModal.show("modal-detail");
+    },
     setValueSearch(value) {
-      console.log(value)
+      console.log(value);
       this.searchObj = {
         keyword: value.keyword,
         date_begin: value.dateBegin,
