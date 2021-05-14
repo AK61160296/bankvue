@@ -27,7 +27,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="list in transactionDataApi" :key="list.id">
+        <tr v-for="list in tansactionDataApi" :key="list.id">
           <td>{{ list.date1 }}</td>
           <td>{{ list.name }}</td>
           <td>{{ list.tsDetail }}</td>
@@ -71,6 +71,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 import ModalTranfer from "./ModalTranfer.vue";
 import ModalDepositWithdraw from "./ModalDepositWithdraw.vue";
 import ButtonAddTransaction from "./ButtonAddTransaction.vue";
@@ -118,7 +119,6 @@ export default {
       this.$bvModal.show("modal-detail");
     },
     setValueSearch(value) {
-      console.log(value);
       this.searchObj = {
         keyword: value.keyword,
         date_begin: value.dateBegin,
@@ -128,12 +128,7 @@ export default {
       this.Search();
     },
     Search() {
-      this.axios
-        .post("http://localhost:29245/Transaction/Search", this.searchObj)
-        .then((response) => {
-          console.log(response.data);
-          this.transactionDataApi = response.data;
-        });
+      this.$store.dispatch("transaction/Seacrh", this.searchObj);
     },
     saveData(Status) {
       if (Status == "success") {
@@ -143,6 +138,9 @@ export default {
       }
       this.Search();
     },
+  },
+  computed: {
+    ...mapState("transaction", ["tansactionDataApi"]),
   },
 };
 </script>

@@ -17,7 +17,7 @@
       <b-button
         class="btn"
         variant="primary"
-        v-on:click="onClickOpenModal(0, '1')"
+        v-on:click="onClickSetDataInModal(0, '1')"
         >เพิ่มบัญชี</b-button
       >
     </b-form>
@@ -37,12 +37,26 @@
           <td>{{ list.acNumber }}</td>
           <td>{{ list.acName }}</td>
           <td>{{ list.acBalance }}<span style="font-size:11px"> THB</span></td>
-          <td v-if="list.acIsActive == 1">ใช้งาน</td>
-          <td v-else>ไม่ใช้งาน</td>
+
+          <td v-if="list.acIsActive == 1">
+            <b-form-checkbox
+              switch
+              size="lg"
+              @change="onClickChangeStatus(list.acId, list.acIsActive)"
+              checked="true"
+            ></b-form-checkbox>
+          </td>
+          <td v-else>
+            <b-form-checkbox
+              switch
+              size="lg"
+              @change="onClickChangeStatus(list.acId, list.acIsActive)"
+            ></b-form-checkbox>
+          </td>
           <td>
             <b-button
               variant="warning"
-              v-on:click="onClickOpenModal(list.acId, '2')"
+              v-on:click="onClickSetDataInModal(list.acId, '2')"
               >เเก้ไข</b-button
             >
           </td>
@@ -76,7 +90,7 @@ export default {
     return {
       keyword: "",
       searchObj: { acNumber: "", acName: "" },
-
+      updateStatus: { acId: "", acIsActive: "" },
       modalType: "",
       accountDetail: {
         acId: "",
@@ -90,10 +104,24 @@ export default {
     this.Search();
   },
   methods: {
+    async onClickChangeStatus(id, status) {
+      if (status == 2) {
+        status = 1;
+      } else {
+        status = 2;
+      }
+      this.updateStatus = {
+        acId: id,
+        acIsActive: status,
+      };
+      await this.$store.dispatch("account/updateStatus", this.updateStatus);
+      await this.Search();
+    },
     Search() {
       this.searchObj = {
         acNumber: this.keyword,
         acName: this.keyword,
+        //user
       };
       this.$store.dispatch("account/Seacrh", this.searchObj);
     },
@@ -101,29 +129,28 @@ export default {
       alert(status);
       this.Search();
     },
-    onClickOpenModal(id, Type) {
+    async onClickSetDataInModal(id, Type) {
       this.modalType = Type;
       if (Type == "2" && id != 0) {
-        const row = this.AccountDataApi.find((element) => element.acId == id);
-        this.accountDetail.acId = id;
-        this.accountDetail.acName = row.acName;
-        this.accountDetail.acNumber = row.acNumber;
-        this.accountDetail.acIsActive = row.acIsActive;
+        await this.$store
+          .dispatch("account/editAccount", id)
+          .then((response) => {
+            this.accountDetail.acId = response.data.acId;
+            this.accountDetail.acName = response.data.acName;
+            this.accountDetail.acNumber = response.data.acNumber;
+            this.accountDetail.acIsActive = response.data.acIsActive;
+          });
       } else {
-        this.accountDetail.account_id = "";
         this.accountDetail.acName = "";
         this.accountDetail.acNumber = "";
         this.accountDetail.acIsActive = "";
       }
-
-      this.$bvModal.show("modal-detail");
+      await this.$bvModal.show("modal-detail");
     },
   },
+
   computed: {
     ...mapState("account", ["AccountDataApi"]),
-    // ...mapGetters({
-    //   accountData: 'account/getAccountTable'
-    // }),
   },
 };
 </script>

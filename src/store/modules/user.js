@@ -1,15 +1,19 @@
 const state = {
-    currentCounter: 0
+    userList:[],
+    userId:0,
+    userName:"",
   }
   
   const getters = { }
   
   const actions = {
-   
+      //loaduserlist
+      //login
+      //logout
   }
   
   const mutations = {
-  
+    //userId:=u,
   }
   
   export default {
