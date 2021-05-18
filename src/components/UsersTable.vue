@@ -11,7 +11,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="list in usersDataApi" :key="list.id">
+        <tr v-for="list in userList" :key="list.id">
           <td>{{ list.userName }}</td>
           <td>{{ list.userEmail }}</td>
           <td v-if="list.userIsActive == 1">ใช้งาน</td>
@@ -27,39 +27,37 @@
   </div>
 </template>
 <script>
+import { mapState } from "vuex";
 // import { defineComponent } from '@vue/composition-api'
 export default {
   name: "users-Table",
   data() {
     return {
-      usersDataApi: null,
-      userIdObj: {
-        UserId: "",
+      userDetail: {
+        userName: "",
+        userID:"",
       },
     };
   },
   methods: {
-    Login(id) {
-      this.userIdObj = {
-        UserId: parseInt(id),
-      };
-      this.axios
-        .post("http://localhost:29245/Home/login", this.userIdObj)
-        .then((response) => {
-          console.log(response.data);
-          this.$emit("subcom", 1);
-        });
+   async Login(id) {
+      const row = this.userList.find((element) => element.userId == id);
+        this.userDetail= {
+        userName: row.userName,
+        userId:row.userId,
+      },
+      await this.$store.dispatch("user/Login",this.userDetail);
+      await this.$emit("subcom", 1);
     },
     Search() {
-      this.axios
-        .post("http://localhost:29245/Home/Userlist", this.searchObj)
-        .then((response) => {
-          this.usersDataApi = response.data;
-        });
+      this.$store.dispatch("user/getUserData");
     },
   },
   mounted() {
     this.Search();
+  },
+  computed: {
+    ...mapState("user", ["userList"]),
   },
 };
 </script>

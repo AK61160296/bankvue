@@ -2,7 +2,7 @@
   <div>
     <bank-modal @setValueInModal="setValueInModal">
       <template v-slot:header>
-        <h3 v-if="ModalData.account_number == ''">เพิ่มบัญชี</h3>
+        <h3 v-if="modalType == 1">เพิ่มบัญชี</h3>
         <h3 v-else>เเก้ไขบัญชี</h3>
       </template>
       <template v-slot:body>
@@ -10,7 +10,7 @@
           <b-form-group
             label="เลขบัญชี"
             label-for="name-input"
-            invalid-feedback="Name is required"
+            invalid-feedback="กรุณากรอกเลขบัญชี"
             :state="nameState"
           >
             <b-form-input
@@ -23,6 +23,7 @@
             ></b-form-input>
             <b-form-input
               v-else
+              maxlenght="10"
               id="name-input"
               v-model="ModalData.account_number"
               :state="nameState"
@@ -34,10 +35,21 @@
           <b-form-group
             label="ชื่อย่อบัญชี"
             label-for="name-input"
-            invalid-feedback="Name is required"
+            invalid-feedback="กรุณากรอกชื่อย่อบัญชี"
             :state="nameState"
           >
             <b-form-input
+              v-if="statusModal == 2"
+              disabled
+              id="name-input"
+              v-model="ModalData.account_name"
+              :state="nameState"
+              maxlength="30"
+              required
+            ></b-form-input>
+
+            <b-form-input
+              v-else
               id="name-input"
               v-model="ModalData.account_name"
               :state="nameState"
@@ -46,7 +58,44 @@
             ></b-form-input>
           </b-form-group>
 
-          <b-form-group id="checkstatus">
+          <b-form-group
+            id="checkstatus"
+            v-if="statusModal == 2"
+            label-for="name-input"
+            invalid-feedback="กรุณาเลือกสถานะ"
+            :state="nameState"
+          >
+            <input
+              disabled
+              type="radio"
+              :state="nameState"
+              id="one"
+              value="1"
+              name="check"
+              required
+              v-model="ModalData.account_status"
+            />
+            <label for="one">ใช้งาน</label>
+            <input
+              disabled
+              type="radio"
+              :state="nameState"
+              id="two"
+              value="2"
+              name="check"
+              required
+              v-model="ModalData.account_status"
+            />
+            <label for="two">ไม่ใช้งาน</label>
+          </b-form-group>
+
+          <b-form-group
+            id="checkstatus"
+            v-else
+            label-for="name-input"
+            invalid-feedback="กรุณาเลือกสถานะ"
+            :state="nameState"
+          >
             <input
               type="radio"
               :state="nameState"
@@ -71,14 +120,15 @@
         </form>
       </template>
       <template v-slot:footer>
-        <b-button variant="secondary" v-on:click="resetModal">CLOSE</b-button>
-        <b-button variant="primary" v-on:click="handleOk">OK</b-button>
+        <b-button variant="secondary" v-on:click="resetModal">ยกเลิก</b-button>
+        <b-button variant="primary" v-on:click="handleOk">บันทึก</b-button>
       </template>
     </bank-modal>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import BankModal from "./BankModal.vue";
 export default {
   components: {
@@ -97,12 +147,19 @@ export default {
         account_name: "",
         account_status: "",
       },
+      accountAddDetail: {
+        acId: "",
+        acNumber: "",
+        acName: "",
+        acIsActive: "",
+        userId: 0,
+      },
     };
   },
   mounted() {},
   methods: {
     setValueInModal() {
-        (this.ModalData.account_id = this.accountDetail.acId),
+      (this.ModalData.account_id = this.accountDetail.acId),
         (this.ModalData.account_name = this.accountDetail.acName),
         (this.ModalData.account_number = this.accountDetail.acNumber),
         (this.ModalData.account_status = this.accountDetail.acIsActive),
@@ -131,39 +188,52 @@ export default {
       // Trigger submit handler
       this.handleSubmit();
     },
-    handleSubmit() {
+    async handleSubmit() {
       // Exit when the form isn't valid
       if (!this.checkFormValidity()) {
         return;
       }
 
-      this.accountDetail = {
-        acId: parseInt(this.ModalData.account_id),
-        acNumber: this.ModalData.account_number,
-        acName: this.ModalData.account_name,
-        acIsActive: parseInt(this.ModalData.account_status),
-      };
-
-      if (this.modalType == "1") {
-        this.$store
-          .dispatch("account/addAccoount", this.accountDetail)
-          .then((response) => {
-            this.$emit("saveData", response.data);
-          });
-      } else {
-        this.$store
-          .dispatch("account/updateAccount", this.accountDetail)
-          .then((response) => {
-            this.$emit("saveData", response.data);
-          });
-      }
-      this.nameState = null;
       this.$nextTick(() => {
         this.$bvModal.hide("modal-detail");
       });
+
+      if (this.modalType == "1") {
+        this.accountAddDetail = {
+          acNumber: this.ModalData.account_number,
+          acName: this.ModalData.account_name,
+          acIsActive: parseInt(this.ModalData.account_status),
+          userId: parseInt(this.userIdLogin),
+        };
+        this.$store
+          .dispatch("account/addAccoount", this.accountAddDetail)
+          .then((response) => {
+            this.$emit("showRecordingResults", response.data);
+          });
+      } else {
+        this.accountDetail = {
+          acId: parseInt(this.ModalData.account_id),
+          acNumber: this.ModalData.account_number,
+          acName: this.ModalData.account_name,
+          acIsActive: parseInt(this.ModalData.account_status),
+          userId: this.userIdLogin,
+        };
+        this.$store
+          .dispatch("account/updateAccount", this.accountDetail)
+          .then((response) => {
+       
+            this.$emit("showRecordingResults", response.data);
+          });
+      }
+      this.nameState = null;
     },
   },
-  computed: {},
+  computed: {
+    statusModal() {
+      return this.accountDetail.acIsActive;
+    },
+    ...mapState("user", ["userIdLogin"]),
+  },
 };
 </script>
 <style scoped>

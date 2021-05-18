@@ -1,4 +1,4 @@
-import defaultPage  from './constant'
+import defaultPage from './constant'
 import axios from "axios";
 const state = {
     AccountDataApi: [],
@@ -6,30 +6,29 @@ const state = {
 }
 const getters = {
     getAccountEdit() {
-        alert()
-        return "xxxx"
+
     }
 }
 const actions = {
     Seacrh({ commit }, obj) {
 
         return axios
-            .post(defaultPage.pathApi+"Home/Search", obj)
+            .post(defaultPage.pathApi + "Home/Search", obj)
             .then((response) => {
                 let posts = response.data;
                 commit('SET_SEARCH', posts);
             });
     },
-    addAccoount(state, accountData) {
+    async addAccoount(state, accountDetail) {
         return axios
-            .post(defaultPage.pathApi+"Home/Add", accountData)
+            .post(defaultPage.pathApi + "Home/Add", accountDetail)
             .then((response) => {
                 return response
             });
     },
-    updateAccount(state, accountData) {
+    updateAccount(state, accountDetail) {
         return axios
-            .post(defaultPage.pathApi+"Home/Update", accountData)
+            .post(defaultPage.pathApi + "Home/Update", accountDetail)
             .then((response) => {
                 return response
             });
@@ -37,14 +36,14 @@ const actions = {
     editAccount(state, id) {
         let obj = { AcId: id }
         return axios
-            .post(defaultPage.pathApi+"Home/Edit", obj)
+            .post(defaultPage.pathApi + "Home/Edit", obj)
             .then((response) => {
                 return response
             });
     },
     updateStatus(state, updateStatus) {
         return axios
-            .post(defaultPage.pathApi+"Home/updateStatus", updateStatus)
+            .post(defaultPage.pathApi + "Home/updateStatus", updateStatus)
             .then((response) => {
                 return response
             });

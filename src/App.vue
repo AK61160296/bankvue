@@ -1,6 +1,6 @@
 <template>
   <div class="small-container">
-    <my-header v-if="subcomponent != 3" @subcom="switchcomponent" color="red" />
+    <Header v-if="subcomponent != 3" @subcom="switchcomponent" color="red" />
     <br />
     <br />
     <h1 v-if="subcomponent == 1">รายการบัญชี</h1>
@@ -11,6 +11,7 @@
     <users-table v-if="subcomponent == 3" @subcom="switchcomponent" />
     <br />
     <br />
+ 
   </div>
 </template>
 
@@ -23,13 +24,13 @@ export default {
   name: "App",
   components: {
     AccountTable,
-    "my-header": Header,
+    Header,
     TransactionTable,
     UsersTable,
-    
   },
   data() {
     return {
+      name:"",
       subcomponent: 3,
       subaccount: true,
       subtransaction: false,
@@ -37,9 +38,11 @@ export default {
   },
   methods: {
     switchcomponent(value) {
-      this.subcomponent = value
+      this.subcomponent = value;
     },
   },
+
+ 
 };
 </script>
 
@@ -51,7 +54,7 @@ h1 {
   margin-left: 230px;
   margin-bottom: 50px;
 }
-.headerTransaction{
-  margin-left:12rem;
+.headerTransaction {
+  margin-left: 12rem;
 }
 </style>

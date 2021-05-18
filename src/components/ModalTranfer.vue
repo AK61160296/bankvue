@@ -5,7 +5,7 @@
         <h3>โอนเงิน</h3>
       </template>
       <template v-slot:body>
-        <form ref="form" @submit.stop.prevent="handleSubmit">
+        <form ref="form" >
           <b-form-group
             label="จาก"
             label-for="name-input"
@@ -13,10 +13,12 @@
             :state="nameState"
           >
             <b-form-select
+              v-on:change="getBalance(ModalData.tranfer_account)"
               v-model="ModalData.tranfer_account"
               :options="options"
             >
             </b-form-select>
+            <span v-if="show" id="hide">ยอดเงินคงเหลือ {{ balance }} THB</span>
           </b-form-group>
 
           <b-form-group
@@ -64,8 +66,8 @@
         </form>
       </template>
       <template v-slot:footer>
-        <b-button variant="secondary" v-on:click="resetModal">CLOSE</b-button>
-        <b-button variant="primary" v-on:click="handleOk">OK</b-button>
+        <b-button variant="secondary" v-on:click="resetModal">ยกเลิก</b-button>
+        <b-button variant="primary" v-on:click="handleOk">บันทึก</b-button>
       </template>
     </bank-modal>
   </div>
@@ -79,7 +81,8 @@ export default {
   },
   data() {
     return {
-      accountNumberApi: null,
+      balance: 0,
+      show: false,
       nameState: null,
       ModalData: {
         tranfer_account: "",
@@ -88,24 +91,42 @@ export default {
         tranfer_detail: "",
         tranfer_note: "",
       },
+      trasactionDetail: {
+        TsAcId: null,
+        TsType: null,
+        TsMoney: null,
+        TsDetail: "",
+        TsNote: "",
+        TsAD: "",
+      },
+      postAccountId: {
+        TsAcId: "",
+      },
       options: [
         { value: "", text: "-- กรุณาเลือกเลขบัญชี --", disabled: true },
       ],
     };
   },
   props: {
-    trasactionDetail: Object,
+    accountData: Array,
   },
   methods: {
-    optionAccount() {
-      this.axios
-        .post("http://localhost:29245/Transaction/Option_account")
+    getBalance(Account) {
+      this.show = true;
+      this.postAccountId.TsAcId = Account;
+      this.$store
+        .dispatch("transaction/getBalance", this.postAccountId)
         .then((response) => {
-          response.data.forEach((element) => {
-            this.options.push({ value: element.acId, text: element.acNumber });
-          });
-          this.accountNumberApi = response.data;
+          this.balance = response.data;
         });
+    },
+    optionAccount() {
+      this.accountData.forEach((element) => {
+        this.options.push({
+          value: element.acId,
+          text: element.acNumber,
+        });
+      });
     },
     checkFormValidity() {
       const valid = this.$refs.form.checkValidity();
@@ -113,6 +134,7 @@ export default {
       return valid;
     },
     resetModal() {
+      this.show = false;
       (this.ModalData = {
         tranfer_account: "",
         tranfer_payee: "",
@@ -141,13 +163,10 @@ export default {
         TsNote: this.ModalData.tranfer_note,
         TsAD: this.ModalData.tranfer_payee,
       };
-      this.axios
-        .post(
-          "http://localhost:29245/Transaction/Transfer",
-          this.trasactionDetail
-        )
+      this.$store
+        .dispatch("transaction/Transfer", this.trasactionDetail)
         .then((response) => {
-          this.$emit("saveData", response.data);
+          this.$emit("showRecordingResults", response.data);
         });
 
       this.nameState = null;

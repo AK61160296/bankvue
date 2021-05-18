@@ -19,9 +19,8 @@
         <b-navbar-nav class="ml-auto">
           <b-nav-item-dropdown right>
             <template #button-content>
-              <em>User</em>
+                {{userName}}
             </template>
-            <b-dropdown-item href="#">Profile</b-dropdown-item>
             <b-dropdown-item v-on:click="subComponent(3)"
               >Sign Out</b-dropdown-item
             >
@@ -29,19 +28,18 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
+
   </div>
 </template>
 <script>
+import { mapState } from "vuex";
 export default {
+  name:"header-navbar",
   data() {
     return {
       component: null,
       isActive: false,
       hasError: false,
-      // value: {
-      //   AccountTable: false,
-      //   TrasactionTable: false,
-      // },
     };
   },
   methods: {
@@ -56,24 +54,9 @@ export default {
       this.component = value;
       this.$emit("subcom", this.component);
     },
-    // transac() {
-    //   this.value = {
-    //     AccountTable: false,
-    //     TrasactionTable: true,
-    //   };
-    //   (this.isActive = false),
-    //     (this.hasError = true),
-    //     this.$emit("subcom", this.value);
-    // },
-    // account() {
-    //   this.value = {
-    //     AccountTable: true,
-    //     TrasactionTable: false,
-    //   };
-    //   (this.isActive = true),
-    //     (this.hasError = false),
-    //     this.$emit("subcom", this.value);
-    // },
+  },
+  computed: {
+       ...mapState("user", ["userIdLogin", "userName"]),
   },
 };
 </script>

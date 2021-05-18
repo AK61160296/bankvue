@@ -13,10 +13,7 @@
             invalid-feedback="Name is required"
             :state="nameState"
           >
-            <b-form-select
-              v-model="ModalData.accountId"
-              :options="optionsAccount"
-            >
+            <b-form-select v-model="ModalData.accountId" :options="options">
             </b-form-select>
           </b-form-group>
 
@@ -45,14 +42,15 @@
         </form>
       </template>
       <template v-slot:footer>
-        <b-button variant="secondary" v-on:click="resetModal">CLOSE</b-button>
-        <b-button variant="primary" v-on:click="handleOk">OK</b-button>
+        <b-button variant="secondary" v-on:click="resetModal">ยกเลิก</b-button>
+        <b-button variant="primary" v-on:click="handleOk">บันทึก</b-button>
       </template>
     </bank-modal>
   </div>
 </template>
 
 <script>
+import { mapState } from "vuex";
 import BankModal from "./BankModal.vue";
 export default {
   components: {
@@ -60,15 +58,25 @@ export default {
   },
   data() {
     return {
-      accountNumber: null,
       nameState: null,
+      trasactionDetail: {
+        TsAcId: null,
+        TsType: null,
+        TsMoney: null,
+        TsDetail: "",
+        TsNote: "",
+        TsAD: "",
+      },
       ModalData: {
         accountId: "",
         monney: "",
         type: "",
         detail: "",
       },
-      optionsAccount: [
+      postUserId: {
+        userId: "",
+      },
+      options: [
         { value: "", text: "-- กรุณาเลือกเลขบัญชี --", disabled: true },
       ],
       optionsType: [
@@ -79,20 +87,16 @@ export default {
     };
   },
   props: {
-    trasactionDetail: Object,
+    accountData: Array,
   },
   methods: {
     optionAccount() {
-      this.axios
-        .post("http://localhost:29245/Transaction/Option_account")
-        .then((response) => {
-          response.data.forEach((element) => {
-            this.optionsAccount.push({
-              value: element.acId,
-              text: element.acNumber,
-            });
-          });
+      this.accountData.forEach((element) => {
+        this.options.push({
+          value: element.acId,
+          text: element.acNumber,
         });
+      });
     },
     checkFormValidity() {
       const valid = this.$refs.form.checkValidity();
@@ -138,14 +142,10 @@ export default {
           TsAD: "",
         };
       }
-      this.axios
-        .post(
-          "http://localhost:29245/Transaction/Deposit_Withdraw",
-          this.trasactionDetail
-        )
+      this.$store
+        .dispatch("transaction/depositWithdraw", this.trasactionDetail)
         .then((response) => {
-          console.log(response);
-          this.$emit("saveData", response.data);
+          this.$emit("showRecordingResults", response.data);
         });
 
       this.nameState = null;
@@ -156,6 +156,9 @@ export default {
   },
   mounted() {
     this.optionAccount();
+  },
+  computed: {
+    ...mapState("user", ["userIdLogin", "userName"]),
   },
 };
 </script>

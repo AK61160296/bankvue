@@ -7,13 +7,13 @@
     />
     <modal-deposit-withdraw
       v-if="type.type_wepositWithdraw == true"
-      @saveData="saveData"
-      :trasactionDetail="trasactionDetail"
+      @showRecordingResults="showRecordingResults"
+      :accountData="accountData"
     />
     <modal-tranfer
-      v-else
-      @saveData="saveData"
-      :trasactionDetail="trasactionDetail"
+      v-if="type.type_tranfer == true"
+      @showRecordingResults="showRecordingResults"
+      :accountData="accountData"
     />
     <table>
       <thead>
@@ -84,63 +84,78 @@ export default {
   props: {},
   data() {
     return {
+      accountData: [],
+      postUserId: {
+        userId: "",
+      },
       type: {
         type_tranfer: false,
         type_wepositWithdraw: false,
       },
-      transactionDataApi: null,
-      searchObj: { keyword: "", date_begin: "", date_end: "", TsDetail: "" },
-      trasactionDetail: {
-        TsAcId: null,
-        TsType: null,
-        TsMoney: null,
+      searchObj: {
+        keyword: "",
+        date_begin: "",
+        date_end: "",
         TsDetail: "",
-        TsNote: "",
-        TsAD: "",
+        userId: "",
       },
     };
   },
   mounted() {
     this.Search();
+    this.optionAccount();
   },
+
   methods: {
+    optionAccount() {
+      this.postUserId = {
+        userId: this.userIdLogin,
+      };
+      this.$store
+        .dispatch("transaction/optionAccount", this.postUserId)
+        .then((response) => {
+          this.accountData = response.data;
+          console.log(this.accountData);
+        });
+    },
     OpenModal(type) {
       if (type == 1) {
-        this.type = {
-          type_tranfer: true,
-          type_wepositWithdraw: false,
-        };
+        this.type.type_tranfer = true;
+        this.type.type_wepositWithdraw = false;
       } else {
-        this.type = {
-          type_tranfer: false,
-          type_wepositWithdraw: true,
-        };
+        this.type.type_tranfer = false;
+        this.type.type_wepositWithdraw = true;
       }
       this.$bvModal.show("modal-detail");
     },
-    setValueSearch(value) {
+    async setValueSearch(value) {
       this.searchObj = {
         keyword: value.keyword,
         date_begin: value.dateBegin,
         date_end: value.dateEnd,
         TsDetail: value.keyword,
+        userId: this.userIdLogin,
       };
-      this.Search();
+      await this.Search();
     },
     Search() {
+      this.searchObj.userId = this.userIdLogin;
       this.$store.dispatch("transaction/Seacrh", this.searchObj);
     },
-    saveData(Status) {
+    showRecordingResults(Status) {
       if (Status == "success") {
-        alert("success");
+        alert("โอนเงินสำเร็จ");
+      } else if (Status == "error") {
+        alert("ไม่สามารถโอนเงินได้เนื่องจากข้อมูลผิดพลาด");
       } else {
-        alert("error");
+        alert("ไม่สามารถโอนเงินได้เนื่องจำนวนเงินไม่เพียงพอ");
       }
       this.Search();
     },
   },
   computed: {
     ...mapState("transaction", ["tansactionDataApi"]),
+    ...mapState("user", ["userIdLogin", "userName"]),
   },
 };
 </script>

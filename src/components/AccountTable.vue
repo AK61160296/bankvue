@@ -65,13 +65,13 @@
     </table>
     <modal-detail-account
       v-if="modalType == '1'"
-      @saveData="saveData"
+      @showRecordingResults="showRecordingResults"
       :modalType="modalType"
       :accountDetail="accountDetail"
     />
     <modal-detail-account
       v-else
-      @saveData="saveData"
+      @showRecordingResults="showRecordingResults"
       :accountDetail="accountDetail"
       :modalType="modalType"
     />
@@ -89,7 +89,7 @@ export default {
   data() {
     return {
       keyword: "",
-      searchObj: { acNumber: "", acName: "" },
+      searchObj: { acNumber: "", acName: "", userId: "" },
       updateStatus: { acId: "", acIsActive: "" },
       modalType: "",
       accountDetail: {
@@ -97,6 +97,7 @@ export default {
         acName: "",
         acNumber: "",
         acIsActive: "",
+        userId: this.userIdLogin,
       },
     };
   },
@@ -108,6 +109,7 @@ export default {
       if (status == 2) {
         status = 1;
       } else {
+        // alert(this.disableModal);
         status = 2;
       }
       this.updateStatus = {
@@ -121,12 +123,17 @@ export default {
       this.searchObj = {
         acNumber: this.keyword,
         acName: this.keyword,
+        userId: this.userIdLogin,
         //user
       };
       this.$store.dispatch("account/Seacrh", this.searchObj);
     },
-    saveData(status) {
-      alert(status);
+    showRecordingResults(status) {
+      if (status == "success") {
+        alert("บันทึกข้อมูลสำเร็จ");
+      }else{
+         alert("ไม่สามารถบันทึกข้อมูลได้เนื่องจากเลขบัญชีซ้ำ");
+      }
       this.Search();
     },
     async onClickSetDataInModal(id, Type) {
@@ -151,6 +158,7 @@ export default {
 
   computed: {
     ...mapState("account", ["AccountDataApi"]),
+    ...mapState("user", ["userIdLogin", "userName"]),
   },
 };
 </script>
