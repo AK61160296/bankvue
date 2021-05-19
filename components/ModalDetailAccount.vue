@@ -19,6 +19,7 @@
               v-model="ModalData.account_number"
               :state="nameState"
               required
+              maxlength=""
             ></b-form-input>
           </b-form-group>
 

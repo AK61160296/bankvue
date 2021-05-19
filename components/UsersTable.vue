@@ -1,6 +1,7 @@
 <template>
   <div>
     <br /><br /><br />
+      <h1>รายการบัญชี</h1>
     <table>
       <thead>
         <tr>
@@ -15,11 +16,11 @@
           <td>{{ list.userName }}</td>
           <td>{{ list.userEmail }}</td>
           <!-- <td > <span v-if="list.userIsActive == 1"> ใช้งาน</span> <span v-else>ไม่ใช้งาน</span></td> -->
-          <td > {{list.userIsActive == 1 ? 'ใช้งาน' : 'ไม่ใช้งาน'}}</td>
+          <td>{{ list.userIsActive == 1 ? 'ใช้งาน' : 'ไม่ใช้งาน' }}</td>
           <td>
-            <b-button variant="warning" v-on:click="Login(list.userId)"
-              >บัญชี</b-button
-            >
+              <b-button variant="warning"  to="/Account" v-on:click="Login(list.userId)"
+                >บัญชี</b-button
+              >
           </td>
         </tr>
       </tbody>
@@ -27,39 +28,39 @@
   </div>
 </template>
 <script>
-import { mapState } from "vuex";
+import { mapState } from 'vuex'
 // import { defineComponent } from '@vue/composition-api'
 export default {
-  name: "users-Table",
+  name: 'users-Table',
   data() {
     return {
       userDetail: {
-        userName: "",
-        userID:"",
+        userName: '',
+        userID: '',
       },
-    };
+    }
   },
   methods: {
     Login(id) {
-      const row = this.userList.find((element) => element.userId == id);
-        this.userDetail= {
+      const row = this.userList.find((element) => element.userId == id)
+      ;(this.userDetail = {
         userName: row.userName,
-        userId:row.userId,
-      },
-       this.$store.dispatch("user/logIn",this.userDetail);
-       this.$emit("subcom", 1);
+        userId: row.userId,
+      }),
+        this.$store.dispatch('user/logIn', this.userDetail)
+      // this.$emit('subcom', 1)
     },
     Search() {
-      this.$store.dispatch("user/getUserData");
+      this.$store.dispatch('user/getUserData')
     },
   },
   mounted() {
-    this.Search();
+    this.Search()
   },
   computed: {
-    ...mapState("user", ["userList"]),
+    ...mapState('user', ['userList']),
   },
-};
+}
 </script>
 <style scoped>
 table {
@@ -106,5 +107,9 @@ button {
 }
 input {
   margin-left: 15px;
+}
+h1 {
+  margin-left: 230px;
+  margin-bottom: 50px;
 }
 </style>

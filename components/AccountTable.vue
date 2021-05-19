@@ -1,6 +1,7 @@
 <template>
   <div>
-    <br />
+    <br><br>
+    <h1>รายการบัญชี</h1>
     <b-form inline class="form">
       คำค้นหา :
       <b-input-group class="mb-2 mr-sm-2 mb-sm-0">
@@ -81,6 +82,7 @@
 
 <script>
 import { mapState } from "vuex";
+
 import ModalDetailAccount from "./ModalDetailAccount.vue";
 export default {
   components: {
@@ -209,5 +211,9 @@ button {
 input {
   margin-right: 10px;
   margin-left: 5px;
+}
+h1 {
+  margin-left: 230px;
+  margin-bottom: 50px;
 }
 </style>

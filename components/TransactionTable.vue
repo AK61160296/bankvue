@@ -1,5 +1,6 @@
 <template>
   <div>
+    <h1>รายการบัญชี</h1>
     <br />
     <button-add-transaction
       @setValueSearch="setValueSearch"
@@ -34,7 +35,7 @@
           <td
             v-if="
               list.tsType == 1 ||
-                (list.tsType == 4 && list.tsAcDestinationId != 0)
+              (list.tsType == 4 && list.tsAcDestinationId != 0)
             "
           >
             -
@@ -42,7 +43,7 @@
           <td
             v-if="
               list.tsType == 1 ||
-                (list.tsType == 4 && list.tsAcDestinationId != 0)
+              (list.tsType == 4 && list.tsAcDestinationId != 0)
             "
           >
             {{ list.tsMoney }}
@@ -50,7 +51,7 @@
           <td
             v-if="
               (list.tsType == 2 && list.tsAcDestinationId == 0) ||
-                list.tsType == 3
+              list.tsType == 3
             "
           >
             {{ list.tsMoney }}
@@ -58,7 +59,7 @@
           <td
             v-if="
               (list.tsType == 2 && list.tsAcDestinationId == 0) ||
-                list.tsType == 3
+              list.tsType == 3
             "
           >
             -
@@ -71,10 +72,10 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import ModalTranfer from "./ModalTranfer.vue";
-import ModalDepositWithdraw from "./ModalDepositWithdraw.vue";
-import ButtonAddTransaction from "./ButtonAddTransaction.vue";
+import { mapState } from 'vuex'
+import ModalTranfer from './ModalTranfer.vue'
+import ModalDepositWithdraw from './ModalDepositWithdraw.vue'
+import ButtonAddTransaction from './ButtonAddTransaction.vue'
 export default {
   components: {
     ButtonAddTransaction,
@@ -86,47 +87,47 @@ export default {
     return {
       accountData: [],
       postUserId: {
-        userId: "",
+        userId: '',
       },
       type: {
         type_tranfer: false,
         type_wepositWithdraw: false,
       },
       searchObj: {
-        keyword: "",
-        date_begin: "",
-        date_end: "",
-        TsDetail: "",
-        userId: "",
+        keyword: '',
+        date_begin: '',
+        date_end: '',
+        TsDetail: '',
+        userId: '',
       },
-    };
+    }
   },
   mounted() {
-    this.Search();
-    this.optionAccount();
+    this.Search()
+    this.optionAccount()
   },
 
   methods: {
     optionAccount() {
       this.postUserId = {
         userId: this.userIdLogin,
-      };
+      }
       this.$store
-        .dispatch("transaction/optionAccount", this.postUserId)
+        .dispatch('transaction/optionAccount', this.postUserId)
         .then((response) => {
-          this.accountData = response.data;
-          console.log(this.accountData);
-        });
+          this.accountData = response.data
+          console.log(this.accountData)
+        })
     },
     OpenModal(type) {
       if (type == 1) {
-        this.type.type_tranfer = true;
-        this.type.type_wepositWithdraw = false;
+        this.type.type_tranfer = true
+        this.type.type_wepositWithdraw = false
       } else {
-        this.type.type_tranfer = false;
-        this.type.type_wepositWithdraw = true;
+        this.type.type_tranfer = false
+        this.type.type_wepositWithdraw = true
       }
-      this.$bvModal.show("modal-detail");
+      this.$bvModal.show('modal-detail')
     },
     async setValueSearch(value) {
       this.searchObj = {
@@ -135,29 +136,29 @@ export default {
         date_end: value.dateEnd,
         TsDetail: value.keyword,
         userId: this.userIdLogin,
-      };
-      await this.Search();
+      }
+      await this.Search()
     },
     Search() {
-      this.searchObj.userId = this.userIdLogin;
-      this.$store.dispatch("transaction/Seacrh", this.searchObj);
+      this.searchObj.userId = this.userIdLogin
+      this.$store.dispatch('transaction/Seacrh', this.searchObj)
     },
     showRecordingResults(Status) {
-      if (Status == "success") {
-        alert("โอนเงินสำเร็จ");
-      } else if (Status == "error") {
-        alert("ไม่สามารถโอนเงินได้เนื่องจากข้อมูลผิดพลาด");
+      if (Status == 'success') {
+        alert('โอนเงินสำเร็จ')
+      } else if (Status == 'error') {
+        alert('ไม่สามารถโอนเงินได้เนื่องจากข้อมูลผิดพลาด')
       } else {
-        alert("ไม่สามารถโอนเงินได้เนื่องจำนวนเงินไม่เพียงพอ");
+        alert('ไม่สามารถโอนเงินได้เนื่องจำนวนเงินไม่เพียงพอ')
       }
-      this.Search();
+      this.Search()
     },
   },
   computed: {
-    ...mapState("transaction", ["tansactionDataApi"]),
-    ...mapState("user", ["userIdLogin", "userName"]),
+    ...mapState('transaction', ['tansactionDataApi']),
+    ...mapState('user', ['userIdLogin', 'userName']),
   },
-};
+}
 </script>
 <style scoped>
 table {
@@ -193,5 +194,8 @@ table th {
   text-align: left;
   background-color: #008cba;
   color: white;
+}
+h1 {
+  margin-left: 12rem;
 }
 </style>
