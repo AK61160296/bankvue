@@ -33,7 +33,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="list in AccountDataApi" :key="list.id">
+        <tr v-for="(list) in AccountDataApi" :key="list.id">
           <td>{{ list.acNumber }}</td>
           <td>{{ list.acName }}</td>
           <td>{{ list.acBalance }}<span style="font-size:11px"> THB</span></td>
@@ -42,15 +42,16 @@
             <b-form-checkbox
               switch
               size="lg"
-              @change="onClickChangeStatus(list.acId, list.acIsActive)"
+              @change="onChangeStatus(list.acId, list.acIsActive)"
               checked="true"
             ></b-form-checkbox>
           </td>
+          
           <td v-else>
             <b-form-checkbox
               switch
               size="lg"
-              @change="onClickChangeStatus(list.acId, list.acIsActive)"
+              @change="onChangeStatus(list.acId, list.acIsActive)"
             ></b-form-checkbox>
           </td>
           <td>
@@ -105,11 +106,10 @@ export default {
     this.Search();
   },
   methods: {
-    async onClickChangeStatus(id, status) {
+    async onChangeStatus(id, status) {
       if (status == 2) {
         status = 1;
       } else {
-        // alert(this.disableModal);
         status = 2;
       }
       this.updateStatus = {
@@ -117,6 +117,7 @@ export default {
         acIsActive: status,
       };
       await this.$store.dispatch("account/updateStatus", this.updateStatus);
+      //
       await this.Search();
     },
     Search() {

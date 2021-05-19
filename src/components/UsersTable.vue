@@ -11,11 +11,11 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="list in userList" :key="list.id">
+        <tr v-for="list in userList" :key="list.userId">
           <td>{{ list.userName }}</td>
           <td>{{ list.userEmail }}</td>
-          <td v-if="list.userIsActive == 1">ใช้งาน</td>
-          <td v-else>ไม่ใช้งาน</td>
+          <!-- <td > <span v-if="list.userIsActive == 1"> ใช้งาน</span> <span v-else>ไม่ใช้งาน</span></td> -->
+          <td > {{list.userIsActive == 1 ? 'ใช้งาน' : 'ไม่ใช้งาน'}}</td>
           <td>
             <b-button variant="warning" v-on:click="Login(list.userId)"
               >บัญชี</b-button
@@ -40,14 +40,14 @@ export default {
     };
   },
   methods: {
-   async Login(id) {
+    Login(id) {
       const row = this.userList.find((element) => element.userId == id);
         this.userDetail= {
         userName: row.userName,
         userId:row.userId,
       },
-      await this.$store.dispatch("user/Login",this.userDetail);
-      await this.$emit("subcom", 1);
+       this.$store.dispatch("user/logIn",this.userDetail);
+       this.$emit("subcom", 1);
     },
     Search() {
       this.$store.dispatch("user/getUserData");

@@ -1,18 +1,18 @@
-import defaultPage  from './constant'
+import defaultPage from './constant'
 import axios from "axios";
 const state = {
   userList: [],
-  userIdLogin: "",
+  userIdLogin: null,
   userName: "",
 }
 
 const getters = {}
 
 const actions = {
-  Login({commit},userDetail){
+  logIn({ commit }, userDetail) {
     commit('SET_USERLOGIN', userDetail);
-  },  
-  getUserData({commit}) {
+  },
+  getUserData({ commit }) {
     return axios
       .post(defaultPage.pathApi + "Home/Userlist")
       .then((response) => {
@@ -20,6 +20,9 @@ const actions = {
         commit('SET_USERLIST', posts);
       });
   },
+  logOut({ commit }) {
+    commit('SET_USERLOGOUT');
+  }
   //loaduserlist
   //login
   //logout
@@ -33,8 +36,8 @@ const mutations = {
     state.userIdLogin = userDetail.userId
     state.userName = userDetail.userName
   },
-  USERLOGOUT(){
-    state.userIdLogin = ""
+  SET_USERLOGOUT(state) {
+    state.userIdLogin = null
     state.userName = ""
   }
 

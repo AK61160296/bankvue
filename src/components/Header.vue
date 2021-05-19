@@ -6,12 +6,12 @@
       <b-collapse id="nav-collapse" is-nav>
         <b-navbar-nav>
           <b-nav-item
-            v-bind:class="{ active: isActive }"
+            :class="menuClass(1,component)"
             v-on:click="subComponent(1)"
             >บัญชี</b-nav-item
           >
           <b-nav-item
-            v-bind:class="{ active: hasError }"
+            :class="menuClass(2,component)"
             v-on:click="subComponent(2)"
             >ธุรกรรม</b-nav-item
           >
@@ -19,7 +19,7 @@
         <b-navbar-nav class="ml-auto">
           <b-nav-item-dropdown right>
             <template #button-content>
-                {{userName}}
+              {{ userName }}
             </template>
             <b-dropdown-item v-on:click="subComponent(3)"
               >Sign Out</b-dropdown-item
@@ -28,13 +28,12 @@
         </b-navbar-nav>
       </b-collapse>
     </b-navbar>
-
   </div>
 </template>
 <script>
 import { mapState } from "vuex";
 export default {
-  name:"header-navbar",
+  name: "header-navbar",
   data() {
     return {
       component: null,
@@ -43,20 +42,27 @@ export default {
     };
   },
   methods: {
+    menuClass(menuId,currentMenuId){
+        return {
+          active : menuId === currentMenuId
+        }
+    },
     subComponent(value) {
       if (value == 1) {
         this.isActive = true;
         this.hasError = false;
-      } else {
+      } else if (value == 2) {
         this.hasError = true;
         this.isActive = false;
+      }else{
+        this.$store.dispatch("user/logOut");
       }
       this.component = value;
       this.$emit("subcom", this.component);
     },
   },
   computed: {
-       ...mapState("user", ["userIdLogin", "userName"]),
+    ...mapState("user", ["userName"]),
   },
 };
 </script>

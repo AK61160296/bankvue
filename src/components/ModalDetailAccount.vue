@@ -14,21 +14,11 @@
             :state="nameState"
           >
             <b-form-input
-              v-if="modalType == 2"
+              :disabled="modalType == 2"
               id="name-input"
               v-model="ModalData.account_number"
               :state="nameState"
               required
-              disabled
-            ></b-form-input>
-            <b-form-input
-              v-else
-              maxlenght="10"
-              id="name-input"
-              v-model="ModalData.account_number"
-              :state="nameState"
-              required
-              maxlength="10"
             ></b-form-input>
           </b-form-group>
 
@@ -39,17 +29,7 @@
             :state="nameState"
           >
             <b-form-input
-              v-if="statusModal == 2"
-              disabled
-              id="name-input"
-              v-model="ModalData.account_name"
-              :state="nameState"
-              maxlength="30"
-              required
-            ></b-form-input>
-
-            <b-form-input
-              v-else
+              :disabled="statusModal"
               id="name-input"
               v-model="ModalData.account_name"
               :state="nameState"
@@ -60,13 +40,12 @@
 
           <b-form-group
             id="checkstatus"
-            v-if="statusModal == 2"
             label-for="name-input"
             invalid-feedback="กรุณาเลือกสถานะ"
             :state="nameState"
           >
             <input
-              disabled
+              :disabled="statusModal"
               type="radio"
               :state="nameState"
               id="one"
@@ -77,36 +56,7 @@
             />
             <label for="one">ใช้งาน</label>
             <input
-              disabled
-              type="radio"
-              :state="nameState"
-              id="two"
-              value="2"
-              name="check"
-              required
-              v-model="ModalData.account_status"
-            />
-            <label for="two">ไม่ใช้งาน</label>
-          </b-form-group>
-
-          <b-form-group
-            id="checkstatus"
-            v-else
-            label-for="name-input"
-            invalid-feedback="กรุณาเลือกสถานะ"
-            :state="nameState"
-          >
-            <input
-              type="radio"
-              :state="nameState"
-              id="one"
-              value="1"
-              name="check"
-              required
-              v-model="ModalData.account_status"
-            />
-            <label for="one">ใช้งาน</label>
-            <input
+              :disabled="statusModal"
               type="radio"
               :state="nameState"
               id="two"
@@ -203,7 +153,7 @@ export default {
           acNumber: this.ModalData.account_number,
           acName: this.ModalData.account_name,
           acIsActive: parseInt(this.ModalData.account_status),
-          userId: parseInt(this.userIdLogin),
+          userId: this.userIdLogin,
         };
         this.$store
           .dispatch("account/addAccoount", this.accountAddDetail)
@@ -221,7 +171,6 @@ export default {
         this.$store
           .dispatch("account/updateAccount", this.accountDetail)
           .then((response) => {
-       
             this.$emit("showRecordingResults", response.data);
           });
       }
@@ -230,7 +179,7 @@ export default {
   },
   computed: {
     statusModal() {
-      return this.accountDetail.acIsActive;
+      return this.accountDetail.acIsActive === 2;
     },
     ...mapState("user", ["userIdLogin"]),
   },
