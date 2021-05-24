@@ -19,7 +19,7 @@
               v-model="ModalData.account_number"
               :state="nameState"
               required
-              maxlength=""
+              maxlength="10"
             ></b-form-input>
           </b-form-group>
 
@@ -79,8 +79,8 @@
 </template>
 
 <script>
-import { mapState } from "vuex";
-import BankModal from "./BankModal.vue";
+import { mapState } from 'vuex'
+import BankModal from './BankModal.vue'
 export default {
   components: {
     BankModal,
@@ -93,74 +93,74 @@ export default {
     return {
       nameState: null,
       ModalData: {
-        account_id: "",
-        account_number: "",
-        account_name: "",
-        account_status: "",
+        account_id: '',
+        account_number: '',
+        account_name: '',
+        account_status: '',
       },
       accountAddDetail: {
-        acId: "",
-        acNumber: "",
-        acName: "",
-        acIsActive: "",
+        acId: '',
+        acNumber: '',
+        acName: '',
+        acIsActive: '',
         userId: 0,
       },
-    };
+    }
   },
   mounted() {},
   methods: {
     setValueInModal() {
-      (this.ModalData.account_id = this.accountDetail.acId),
+      ;(this.ModalData.account_id = this.accountDetail.acId),
         (this.ModalData.account_name = this.accountDetail.acName),
         (this.ModalData.account_number = this.accountDetail.acNumber),
         (this.ModalData.account_status = this.accountDetail.acIsActive),
-        (this.nameState = null);
+        (this.nameState = null)
     },
     checkFormValidity() {
-      const valid = this.$refs.form.checkValidity();
-      this.nameState = valid;
-      return valid;
+      const valid = this.$refs.form.checkValidity()
+      this.nameState = valid
+      return valid
     },
     resetModal() {
       this.ModalData = {
-        account_id: "",
-        account_name: "",
-        account_number: "",
-        account_status: "",
-      };
-      this.nameState = null;
+        account_id: '',
+        account_name: '',
+        account_number: '',
+        account_status: '',
+      }
+      this.nameState = null
       this.$nextTick(() => {
-        this.$bvModal.hide("modal-detail");
-      });
+        this.$bvModal.hide('modal-detail')
+      })
     },
     handleOk(bvModalEvt) {
       // Prevent modal from closing
-      bvModalEvt.preventDefault();
+      bvModalEvt.preventDefault()
       // Trigger submit handler
-      this.handleSubmit();
+      this.handleSubmit()
     },
     async handleSubmit() {
       // Exit when the form isn't valid
       if (!this.checkFormValidity()) {
-        return;
-      }
+        return
+      } 
 
       this.$nextTick(() => {
-        this.$bvModal.hide("modal-detail");
-      });
+        this.$bvModal.hide('modal-detail')
+      })
 
-      if (this.modalType == "1") {
+      if (this.modalType == '1') {
         this.accountAddDetail = {
           acNumber: this.ModalData.account_number,
           acName: this.ModalData.account_name,
           acIsActive: parseInt(this.ModalData.account_status),
           userId: this.userIdLogin,
-        };
+        }
         this.$store
-          .dispatch("account/addAccoount", this.accountAddDetail)
+          .dispatch('account/addAccoount', this.accountAddDetail)
           .then((response) => {
-            this.$emit("showRecordingResults", response.data);
-          });
+            this.$emit('showRecordingResults', response.data)
+          })
       } else {
         this.accountDetail = {
           acId: parseInt(this.ModalData.account_id),
@@ -168,23 +168,23 @@ export default {
           acName: this.ModalData.account_name,
           acIsActive: parseInt(this.ModalData.account_status),
           userId: this.userIdLogin,
-        };
+        }
         this.$store
-          .dispatch("account/updateAccount", this.accountDetail)
+          .dispatch('account/updateAccount', this.accountDetail)
           .then((response) => {
-            this.$emit("showRecordingResults", response.data);
-          });
+            this.$emit('showRecordingResults', response.data)
+          })
       }
-      this.nameState = null;
+      this.nameState = null
     },
   },
   computed: {
     statusModal() {
-      return this.accountDetail.acIsActive === 2;
+      return this.accountDetail.acIsActive === 2
     },
-    ...mapState("user", ["userIdLogin"]),
+    ...mapState('user', ['userIdLogin']),
   },
-};
+}
 </script>
 <style scoped>
 #checkstatus label {

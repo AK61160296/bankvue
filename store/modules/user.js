@@ -2,7 +2,7 @@ import defaultPage from './constant'
 import axios from "axios";
 const state = {
   userList: [],
-  userIdLogin: null,
+  userIdLogin: 0,
   userName: "",
 }
 
@@ -10,6 +10,9 @@ const getters = {}
 
 const actions = {
   logIn({ commit }, userDetail) {
+
+    this.app.$cookies.set('token', userDetail)
+
     commit('SET_USERLOGIN', userDetail);
   },
   getUserData({ commit }) {

@@ -130,6 +130,13 @@ export default {
       this.$bvModal.show('modal-detail')
     },
     async setValueSearch(value) {
+      if (value.dateBegin != '' && value.dateEnd == '') {
+        value.dateEnd = value.dateBegin
+      } else if (value.dateBegin == '' && value.dateEnd != '') {
+        value.dateBegin = value.dateEnd
+      }
+      console.log(value.dateBegin)
+      console.log(value.dateEnd)
       this.searchObj = {
         keyword: value.keyword,
         date_begin: value.dateBegin,

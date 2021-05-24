@@ -1,7 +1,7 @@
 <template>
   <div>
     <br /><br /><br />
-      <h1>รายการบัญชี</h1>
+    <h1>รายการบัญชี</h1>
     <table>
       <thead>
         <tr>
@@ -18,9 +18,9 @@
           <!-- <td > <span v-if="list.userIsActive == 1"> ใช้งาน</span> <span v-else>ไม่ใช้งาน</span></td> -->
           <td>{{ list.userIsActive == 1 ? 'ใช้งาน' : 'ไม่ใช้งาน' }}</td>
           <td>
-              <b-button variant="warning"  to="/Account" v-on:click="Login(list.userId)"
-                >บัญชี</b-button
-              >
+            <b-button variant="warning" v-on:click="Login(list.userId)"
+              >บัญชี</b-button
+            >
           </td>
         </tr>
       </tbody>
@@ -29,7 +29,7 @@
 </template>
 <script>
 import { mapState } from 'vuex'
-// import { defineComponent } from '@vue/composition-api'
+// import cookie from 'js-cookie'
 export default {
   name: 'users-Table',
   data() {
@@ -40,23 +40,29 @@ export default {
       },
     }
   },
+  created() {},
+  mounted() {
+    this.Search()
+  },
   methods: {
     Login(id) {
+      let tokenUserId = id
+      // cookie.set('token', tokenUserId, { expires: 1 / 24 })
+
       const row = this.userList.find((element) => element.userId == id)
-      ;(this.userDetail = {
+      this.userDetail = {
         userName: row.userName,
         userId: row.userId,
-      }),
+      },
         this.$store.dispatch('user/logIn', this.userDetail)
+      this.$router.push('/Account')
       // this.$emit('subcom', 1)
     },
     Search() {
       this.$store.dispatch('user/getUserData')
     },
   },
-  mounted() {
-    this.Search()
-  },
+
   computed: {
     ...mapState('user', ['userList']),
   },

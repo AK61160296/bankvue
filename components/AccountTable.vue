@@ -1,6 +1,6 @@
 <template>
   <div>
-    <br><br>
+    <br /><br />
     <h1>รายการบัญชี</h1>
     <b-form inline class="form">
       คำค้นหา :
@@ -34,10 +34,10 @@
         </tr>
       </thead>
       <tbody>
-        <tr v-for="(list) in AccountDataApi" :key="list.id">
+        <tr v-for="list in AccountDataApi" :key="list.id">
           <td>{{ list.acNumber }}</td>
           <td>{{ list.acName }}</td>
-          <td>{{ list.acBalance }}<span style="font-size:11px"> THB</span></td>
+          <td>{{ list.acBalance }}<span style="font-size: 11px"> THB</span></td>
 
           <td v-if="list.acIsActive == 1">
             <b-form-checkbox
@@ -47,7 +47,7 @@
               checked="true"
             ></b-form-checkbox>
           </td>
-          
+
           <td v-else>
             <b-form-checkbox
               switch
@@ -77,93 +77,96 @@
       :accountDetail="accountDetail"
       :modalType="modalType"
     />
+
   </div>
 </template>
 
 <script>
-import { mapState } from "vuex";
-
-import ModalDetailAccount from "./ModalDetailAccount.vue";
+import { mapState } from 'vuex'
+import cookie from 'js-cookie'
+import ModalDetailAccount from './ModalDetailAccount.vue'
 export default {
+  
   components: {
     ModalDetailAccount,
   },
-  name: "account-table",
+  name: 'account-table',
   data() {
     return {
-      keyword: "",
-      searchObj: { acNumber: "", acName: "", userId: "" },
-      updateStatus: { acId: "", acIsActive: "" },
-      modalType: "",
+      keyword: '',
+      searchObj: { acNumber: '', acName: '', userId: '' },
+      updateStatus: { acId: '', acIsActive: '' },
+      modalType: '',
       accountDetail: {
-        acId: "",
-        acName: "",
-        acNumber: "",
-        acIsActive: "",
+        acId: '',
+        acName: '',
+        acNumber: '',
+        acIsActive: '',
         userId: this.userIdLogin,
       },
-    };
+    }
   },
   mounted() {
-    this.Search();
+    this.Search()
   },
   methods: {
     async onChangeStatus(id, status) {
       if (status == 2) {
-        status = 1;
+        status = 1
       } else {
-        status = 2;
+        status = 2
       }
       this.updateStatus = {
         acId: id,
         acIsActive: status,
-      };
-      await this.$store.dispatch("account/updateStatus", this.updateStatus);
+      }
+      await this.$store.dispatch('account/updateStatus', this.updateStatus)
       //
-      await this.Search();
+      await this.Search()
     },
     Search() {
+      let token = cookie.get('token')
       this.searchObj = {
         acNumber: this.keyword,
         acName: this.keyword,
-        userId: this.userIdLogin,
+        userId:  this.userIdLogin,
         //user
-      };
-      this.$store.dispatch("account/Seacrh", this.searchObj);
+      }
+      this.$store.dispatch('account/Seacrh', this.searchObj)
     },
     showRecordingResults(status) {
-      if (status == "success") {
-        alert("บันทึกข้อมูลสำเร็จ");
-      }else{
-         alert("ไม่สามารถบันทึกข้อมูลได้เนื่องจากเลขบัญชีซ้ำ");
+      if (status == 'success') {
+        alert('บันทึกข้อมูลสำเร็จ')
+      } else {
+        alert('ไม่สามารถบันทึกข้อมูลได้เนื่องจากเลขบัญชีซ้ำ')
       }
-      this.Search();
+      this.Search()
     },
     async onClickSetDataInModal(id, Type) {
-      this.modalType = Type;
-      if (Type == "2" && id != 0) {
+      this.modalType = Type
+      if (Type == '2' && id != 0) {
         await this.$store
-          .dispatch("account/editAccount", id)
+          .dispatch('account/editAccount', id)
           .then((response) => {
-            this.accountDetail.acId = response.data.acId;
-            this.accountDetail.acName = response.data.acName;
-            this.accountDetail.acNumber = response.data.acNumber;
-            this.accountDetail.acIsActive = response.data.acIsActive;
-          });
+            this.accountDetail.acId = response.data.acId
+            this.accountDetail.acName = response.data.acName
+            this.accountDetail.acNumber = response.data.acNumber
+            this.accountDetail.acIsActive = response.data.acIsActive
+          })
       } else {
-        this.accountDetail.acName = "";
-        this.accountDetail.acNumber = "";
-        this.accountDetail.acIsActive = "";
+        this.accountDetail.acName = ''
+        this.accountDetail.acNumber = ''
+        this.accountDetail.acIsActive = ''
       }
-      await this.$bvModal.show("modal-detail");
+      await this.$bvModal.show('modal-detail')
     },
   },
 
   computed: {
-    ...mapState("account", ["AccountDataApi"]),
-    ...mapState("user", ["userIdLogin", "userName"]),
+    ...mapState('account', ['AccountDataApi']),
+    ...mapState('user', ['userIdLogin', 'userName']),
   },
-};
+}
 </script>
 <style scoped>
 table {

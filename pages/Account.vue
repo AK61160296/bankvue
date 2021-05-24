@@ -1,17 +1,20 @@
 <template>
   <div>
-    <Header/>
     <AccountTable />
   </div>
 </template>
 
 <script lang="ts">
-import Header from '~/components/Header.vue'
 import AccountTable from '~/components/AccountTable.vue'
 export default {
+  asyncData() {
+    if (process.server) {
+      console.log('server')
+    }
+    return { view: 'hoooo' }
+  },
   components: {
     AccountTable,
-    Header
   },
 }
 </script>

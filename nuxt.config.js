@@ -1,6 +1,6 @@
 export default {
   // Disable server-side rendering: https://go.nuxtjs.dev/ssr-mode
-  ssr: false,
+  ssr: true,
 
   // Target: https://go.nuxtjs.dev/config-target
   target: 'static',
@@ -17,7 +17,9 @@ export default {
       { rel: 'icon', type: 'image/x-icon', href: '/favicon.ico' }
     ]
   },
-
+  router: {
+    middleware: ['login']
+  },
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
   ],
@@ -45,6 +47,8 @@ export default {
     '@nuxtjs/pwa',
     // https://go.nuxtjs.dev/content
     '@nuxt/content',
+    'cookie-universal-nuxt',
+    'js-cookie',
   ],
 
   // Axios module configuration: https://go.nuxtjs.dev/config-axios

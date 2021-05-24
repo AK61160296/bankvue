@@ -52,6 +52,7 @@ export default {
       }
     },
     subComponent(value) {
+    
       if (value == 1) {
         this.isActive = true
         this.hasError = false
@@ -62,7 +63,6 @@ export default {
         this.$store.dispatch('user/logOut')
       }
       this.component = value
-      this.$emit('subcom', this.component)
     },
   },
   computed: {
