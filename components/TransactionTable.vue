@@ -116,7 +116,6 @@ export default {
         .dispatch('transaction/optionAccount', this.postUserId)
         .then((response) => {
           this.accountData = response.data
-          console.log(this.accountData)
         })
     },
     OpenModal(type) {
@@ -130,13 +129,12 @@ export default {
       this.$bvModal.show('modal-detail')
     },
     async setValueSearch(value) {
-      if (value.dateBegin != '' && value.dateEnd == '') {
-        value.dateEnd = value.dateBegin
-      } else if (value.dateBegin == '' && value.dateEnd != '') {
-        value.dateBegin = value.dateEnd
-      }
-      console.log(value.dateBegin)
-      console.log(value.dateEnd)
+      // if (value.dateBegin != '' && value.dateEnd == '') {
+      //   value.dateEnd = value.dateBegin
+      // } else if (value.dateBegin == '' && value.dateEnd != '') {
+      //   value.dateBegin = value.dateEnd
+      // }
+
       this.searchObj = {
         keyword: value.keyword,
         date_begin: value.dateBegin,
@@ -151,17 +149,19 @@ export default {
       this.$store.dispatch('transaction/Seacrh', this.searchObj)
     },
     showRecordingResults(Status) {
-      if (Status == 'success') {
-        alert('โอนเงินสำเร็จ')
-      } else if (Status == 'error') {
-        alert('ไม่สามารถโอนเงินได้เนื่องจากข้อมูลผิดพลาด')
-      } else {
-        alert('ไม่สามารถโอนเงินได้เนื่องจำนวนเงินไม่เพียงพอ')
-      }
+      alert(Status)
+      // if (Status == 'success') {
+      //   alert('โอนเงินสำเร็จ')
+      // } else if (Status == 'error') {
+      //   alert('ไม่สามารถโอนเงินได้เนื่องจากข้อมูลผิดพลาด')
+      // } else {
+      //   alert('ไม่สามารถโอนเงินได้เนื่องจำนวนเงินไม่เพียงพอ')
+      // }
       this.Search()
     },
   },
   computed: {
+
     ...mapState('transaction', ['tansactionDataApi']),
     ...mapState('user', ['userIdLogin', 'userName']),
   },

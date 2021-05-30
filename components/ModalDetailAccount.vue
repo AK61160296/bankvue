@@ -11,13 +11,13 @@
             label="เลขบัญชี"
             label-for="name-input"
             invalid-feedback="กรุณากรอกเลขบัญชี"
-            :state="nameState"
+      
           >
             <b-form-input
               :disabled="modalType == 2"
               id="name-input"
               v-model="ModalData.account_number"
-              :state="nameState"
+        
               required
               maxlength="10"
             ></b-form-input>
@@ -27,13 +27,13 @@
             label="ชื่อย่อบัญชี"
             label-for="name-input"
             invalid-feedback="กรุณากรอกชื่อย่อบัญชี"
-            :state="nameState"
+      
           >
             <b-form-input
               :disabled="statusModal"
               id="name-input"
               v-model="ModalData.account_name"
-              :state="nameState"
+        
               maxlength="30"
               required
             ></b-form-input>
@@ -43,12 +43,12 @@
             id="checkstatus"
             label-for="name-input"
             invalid-feedback="กรุณาเลือกสถานะ"
-            :state="nameState"
+      
           >
             <input
               :disabled="statusModal"
               type="radio"
-              :state="nameState"
+        
               id="one"
               value="1"
               name="check"
@@ -59,7 +59,7 @@
             <input
               :disabled="statusModal"
               type="radio"
-              :state="nameState"
+        
               id="two"
               value="2"
               name="check"
@@ -91,6 +91,7 @@ export default {
   },
   data() {
     return {
+      
       nameState: null,
       ModalData: {
         account_id: '',
@@ -108,6 +109,7 @@ export default {
     }
   },
   mounted() {},
+
   methods: {
     setValueInModal() {
       ;(this.ModalData.account_id = this.accountDetail.acId),
@@ -116,11 +118,7 @@ export default {
         (this.ModalData.account_status = this.accountDetail.acIsActive),
         (this.nameState = null)
     },
-    checkFormValidity() {
-      const valid = this.$refs.form.checkValidity()
-      this.nameState = valid
-      return valid
-    },
+  
     resetModal() {
       this.ModalData = {
         account_id: '',
@@ -141,9 +139,13 @@ export default {
     },
     async handleSubmit() {
       // Exit when the form isn't valid
-      if (!this.checkFormValidity()) {
+    if(this.ModalData.account_number == '' || this.ModalData.account_name == ''|| this.ModalData.account_status == ''){
+        alert("กรุณากรอกข้อมูลให้ครบถ้วน")
         return
-      } 
+    }else if(this.ModalData.account_number.length < 10){
+        alert("กรุณากรอกเลขบัญชีให้ครบ 10 หลัก")
+        return
+    } 
 
       this.$nextTick(() => {
         this.$bvModal.hide('modal-detail')

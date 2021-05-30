@@ -5,12 +5,11 @@
         <h3>โอนเงิน</h3>
       </template>
       <template v-slot:body>
-        <form ref="form" >
+        <form ref="form">
           <b-form-group
             label="จาก"
             label-for="name-input"
             invalid-feedback="Name is required"
-            :state="nameState"
           >
             <b-form-select
               v-on:change="getBalance(ModalData.tranfer_account)"
@@ -25,12 +24,10 @@
             label="ไปที่"
             label-for="name-input"
             invalid-feedback="Name is required"
-            :state="nameState"
           >
             <b-form-input
               id="name-input"
               v-model="ModalData.tranfer_payee"
-              :state="nameState"
               required
               maxlength="10"
             ></b-form-input>
@@ -40,12 +37,10 @@
             label="จำนวนเงิน"
             label-for="name-input"
             invalid-feedback="Name is required"
-            :state="nameState"
           >
             <b-form-input
               id="name-input"
               v-model="ModalData.tranfer_monney"
-              :state="nameState"
               required
             ></b-form-input>
           </b-form-group>
@@ -54,7 +49,6 @@
             label="หมายเหตุ"
             label-for="name-input"
             invalid-feedback="Name is required"
-            :state="nameState"
           >
             <b-form-textarea
               id="textarea-small"
@@ -74,7 +68,7 @@
 </template>
 
 <script>
-import BankModal from "./BankModal.vue";
+import BankModal from './BankModal.vue'
 export default {
   components: {
     BankModal,
@@ -85,100 +79,130 @@ export default {
       show: false,
       nameState: null,
       ModalData: {
-        tranfer_account: "",
-        tranfer_payee: "",
-        tranfer_monney: "",
-        tranfer_detail: "",
-        tranfer_note: "",
+        tranfer_account: '',
+        tranfer_payee: '',
+        tranfer_monney: '',
+        tranfer_detail: '',
+        tranfer_note: '',
       },
       trasactionDetail: {
         TsAcId: null,
         TsType: null,
         TsMoney: null,
-        TsDetail: "",
-        TsNote: "",
-        TsAD: "",
+        TsDetail: '',
+        TsNote: '',
+        TsAD: '',
       },
       postAccountId: {
-        TsAcId: "",
+        TsAcId: '',
       },
       options: [
-        { value: "", text: "-- กรุณาเลือกเลขบัญชี --", disabled: true },
+        { value: '', text: '-- กรุณาเลือกเลขบัญชี --', disabled: true },
       ],
-    };
+    }
   },
   props: {
     accountData: Array,
   },
+  mounted() {
+    this.optionAccount()
+  },
   methods: {
     getBalance(Account) {
-      this.show = true;
-      this.postAccountId.TsAcId = Account;
+      this.show = true
+      this.postAccountId.TsAcId = Account
       this.$store
-        .dispatch("transaction/getBalance", this.postAccountId)
+        .dispatch('transaction/getBalance', this.postAccountId)
         .then((response) => {
-          this.balance = response.data;
-        });
+          this.balance = response.data
+        })
     },
     optionAccount() {
       this.accountData.forEach((element) => {
         this.options.push({
           value: element.acId,
           text: element.acNumber,
-        });
-      });
+        })
+      })
     },
-    checkFormValidity() {
-      const valid = this.$refs.form.checkValidity();
-      this.nameState = valid;
-      return valid;
-    },
+
     resetModal() {
-      this.show = false;
-      (this.ModalData = {
-        tranfer_account: "",
-        tranfer_payee: "",
-        tranfer_monney: "",
-        tranfer_detail: "",
-        tranfer_note: "",
+      this.show = false
+      ;(this.ModalData = {
+        tranfer_account: '',
+        tranfer_payee: '',
+        tranfer_monney: '',
+        tranfer_detail: '',
+        tranfer_note: '',
       }),
-        (this.nameState = null);
+        (this.nameState = null)
       this.$nextTick(() => {
-        this.$bvModal.hide("modal-detail");
-      });
+        this.$bvModal.hide('modal-detail')
+      })
     },
     handleOk(bvModalEvt) {
-      bvModalEvt.preventDefault();
-      this.handleSubmit();
+      bvModalEvt.preventDefault()
+      this.handleSubmit()
     },
     handleSubmit() {
-      if (!this.checkFormValidity()) {
-        return;
+      const checkAccountTranfer = this.accountData.find(
+        (element) => element.acId == this.ModalData.tranfer_account
+      )
+
+      if (this.ModalData.tranfer_account == '' ||this.ModalData.tranfer_monney == '' || this.ModalData.tranfer_payee == '') {
+        alert('กรุณากรอกข้อมูลให้ครบถ้วน')
+        return
+      } else if (this.ModalData.tranfer_payee.length < 10) {
+        alert('กรุณากรอกเลขบัญชีให้ครบ 10 หลัก')
+        return
+      } else if (this.ModalData.tranfer_payee == checkAccountTranfer.acNumber) {
+        alert('กรุณากรอกเลขบัญชีผู้รับให้ไม่ซ้ำกับบัญชีผู้โอน')
+        return
       }
       this.trasactionDetail = {
         TsAcId: parseInt(this.ModalData.tranfer_account),
         TsType: 3,
         TsMoney: parseInt(this.ModalData.tranfer_monney),
-        TsDetail: "โอนเงิน",
+        TsDetail: 'โอนเงิน',
         TsNote: this.ModalData.tranfer_note,
         TsAD: this.ModalData.tranfer_payee,
-      };
+      }
       this.$store
-        .dispatch("transaction/Transfer", this.trasactionDetail)
+        .dispatch('transaction/Transfer', this.trasactionDetail)
         .then((response) => {
-          this.$emit("showRecordingResults", response.data);
-        });
-
-      this.nameState = null;
+          let status = ''
+          if (response.data == 'success') {
+            status = 'โอนเงินสำเร็จ'
+          } else if (response.data == 'error_balance') {
+            status = 'ไม่สามารถโอนงินได้เนื่องจากจำนวนเงินไม่เพียงพอ'
+          } else {
+            status = 'เกิดข้อผิดพลาดในการทำรายการ'
+          }
+          this.$emit('showRecordingResults', status)
+        })
+      this.resetModal()
+      this.nameState = null
       this.$nextTick(() => {
-        this.$bvModal.hide("modal-detail");
-      });
+        this.$bvModal.hide('modal-detail')
+      })
     },
   },
-  mounted() {
-    this.optionAccount();
+
+  computed: {
+    // fullName: {
+    //   // getter
+    //   get: function () {
+    //     return this.firstName + ' ' + this.lastName
+    //   },
+    //   // setter
+    //   set: function (newValue) {
+    //     var names = newValue.split(' ')
+    //     this.firstName = names[0]
+    //     this.lastName = names[names.length - 1]
+    //   },
+    // },
   },
-};
+}
 </script>
 <style scoped>
 #checkstatus label {

@@ -8,6 +8,7 @@
 <script lang="ts">
 import TransactionTable from '~/components/TransactionTable.vue'
 export default {
+  layout: 'empty',
   components: {
     TransactionTable,
   },

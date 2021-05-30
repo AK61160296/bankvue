@@ -77,7 +77,6 @@
       :accountDetail="accountDetail"
       :modalType="modalType"
     />
-
   </div>
 </template>
 
@@ -86,7 +85,6 @@ import { mapState } from 'vuex'
 import cookie from 'js-cookie'
 import ModalDetailAccount from './ModalDetailAccount.vue'
 export default {
-  
   components: {
     ModalDetailAccount,
   },
@@ -108,6 +106,7 @@ export default {
   },
   mounted() {
     this.Search()
+    // this.test()
   },
   methods: {
     async onChangeStatus(id, status) {
@@ -125,7 +124,6 @@ export default {
       await this.Search()
     },
     Search() {
-      let token = cookie.get('token')
       this.searchObj = {
         acNumber: this.keyword,
         acName: this.keyword,
@@ -163,6 +161,7 @@ export default {
   },
 
   computed: {
+
     ...mapState('account', ['AccountDataApi']),
     ...mapState('user', ['userIdLogin', 'userName']),
   },

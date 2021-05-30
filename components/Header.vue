@@ -17,6 +17,10 @@
             v-on:click="subComponent(2)"
             >ธุรกรรม</b-nav-item
           >
+          <b-nav-item
+            to="/Mockup"
+            >SCSS</b-nav-item
+          >
         </b-navbar-nav>
 
         <b-navbar-nav class="ml-auto">
@@ -52,7 +56,6 @@ export default {
       }
     },
     subComponent(value) {
-    
       if (value == 1) {
         this.isActive = true
         this.hasError = false
